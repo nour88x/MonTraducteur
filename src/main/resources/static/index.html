@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Translate AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #1a73e8; 
+            --bg: #ffffff; 
+            --border: #dadce0; 
+            --text: #3c4043;
+            --text-secondary: #5f6368;
+            --hover-bg: #f8f9fa;
+            --active-bg: #e8f0fe;
+        }
+        
+        body { 
+            font-family: 'Google Sans', 'Roboto', Arial, sans-serif; 
+            background-color: var(--bg); 
+            margin: 0; 
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border);
+            background: white;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            font-size: 22px;
+            font-weight: 400;
+        }
+        
+        .logo i {
+            color: var(--primary);
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 16px;
+            border-bottom: none;
+        }
+        
+        .tab {
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            background-color: var(--active-bg);
+        }
+        
+        .tab:hover:not(.active) {
+            background-color: var(--hover-bg);
+        }
+        
+        /* Main Container */
+        .container {
+            display: flex;
+            height: calc(100vh - 64px);
+        }
+        
+        /* Translation Area */
+        .translation-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .lang-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .lang-select {
+            padding: 10px 40px 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            color: var(--text);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235f6368'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+        }
+        
+        .lang-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .swap-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        
+        .swap-btn:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        /* Translation Boxes */
+        .translation-boxes {
+            display: flex;
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.08);
+        }
+        
+        .translation-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+        }
+        
+        .translation-box:first-child {
+            border-right: 1px solid var(--border);
+        }
+        
+        .box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            background-color: var(--hover-bg);
+        }
+        
+        .box-lang {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .detected-lang {
+            font-size: 12px;
+            color: var(--primary);
+            font-style: italic;
+            margin-left: 8px;
+        }
+        
+        .box-tools {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .tool-btn {
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        
+        .tool-btn:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        
+        .box-content {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        textarea {
+            flex: 1;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--text);
+            font-family: inherit;
+            outline: none;
+            background: transparent;
+            min-height: 200px;
+        }
+        
+        /* AJOUT: Styles RTL pour l'arabe */
+        textarea.rtl-arabic {
+            direction: rtl;
+            text-align: right;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        textarea::placeholder {
+            color: #9aa0a6;
+        }
+        
+        .box-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .char-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .file-options {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .file-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .file-btn:hover {
+            background-color: var(--hover-bg);
+        }
+        
+/* Image container - MODIFICATION POUR AGANDIR LE CADRE */
+.image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    display: none;
+    flex-direction: column;
+    padding: 16px;
+    z-index: 10;
+    overflow: auto;
+}
+
+.image-container.active {
+    display: flex;
+}
+
+/* CADRE D'IMAGE AGRANDI */
+.image-frame {
+    width: 100%;
+    height: 350px; /* Augmenté de 200px à 350px */
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--hover-bg);
+    margin-bottom: 16px;
+    position: relative;
+}
+
+/* IMAGE TÉLÉCHARGÉE - PLUS GRANDE */
+.uploaded-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Garde les proportions */
+    padding: 4px; /* Réduit le padding pour plus d'espace */
+}
+        
+        .image-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: left;
+            padding: 12px;
+            background: var(--hover-bg);
+            border-radius: 8px;
+            width: 100%;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+        
+        /* AJOUT: Style RTL pour le texte arabe dans les images */
+        .image-text.rtl-arabic {
+            direction: rtl;
+            text-align: right;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .image-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+        }
+        
+        .clear-image-btn {
+            padding: 8px 16px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .clear-image-btn:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        .no-image-text {
+    color: var(--text-secondary);
+    font-size: 16px; /* Légèrement plus grand */
+    text-align: center;
+    padding: 30px 20px; /* Plus d'espacement */
+}
+
+.no-image-text .fa-image {
+    font-size: 3em; /* Icône plus grande */
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+}
+        
+        /* CHATBOT STYLES */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.08);
+        }
+
+        .chat-header-info {
+            padding: 12px 20px;
+            background: #f1f3f4;
+            color: #5f6368;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: #ffffff;
+            min-height: 300px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background-color: var(--hover-bg);
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.loading {
+            align-self: flex-start;
+            background-color: var(--hover-bg);
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        /* AJOUT: Style RTL pour les messages en arabe dans le chatbot */
+        .message.rtl-arabic {
+            direction: rtl;
+            text-align: right;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .chat-input-area {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            background: #fff;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+
+        .send-chat-btn {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .send-chat-btn:hover {
+            background-color: #1558b0;
+        }
+
+        .clear-chat-btn {
+            margin-top: 8px;
+            padding: 8px 16px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clear-chat-btn:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        /* History Sidebar */
+        .history-sidebar {
+            width: 320px;
+            border-left: 1px solid var(--border);
+            background: white;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .history-sidebar.active {
+            display: flex;
+        }
+        
+        .history-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .close-history {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 4px;
+        }
+        
+        .history-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .history-tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .history-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .history-item {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .history-item:hover {
+            background-color: var(--hover-bg);
+            border-color: var(--border);
+        }
+        
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .history-type {
+            font-size: 12px;
+            color: var(--primary);
+            background-color: var(--active-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .history-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        .history-text {
+            font-size: 14px;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .history-file-name {
+            font-size: 14px;
+            color: var(--text);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .history-langs {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .clear-history {
+            padding: 12px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .clear-btn {
+            width: 100%;
+            padding: 10px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .clear-btn:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        /* File upload inputs */
+        .file-upload {
+            display: none;
+        }
+        
+        /* Améliorer le défilement du chat */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .history-sidebar {
+                width: 100%;
+                height: 50vh;
+                border-left: none;
+                border-top: 1px solid var(--border);
+            }
+            
+            .translation-boxes {
+                flex-direction: column;
+            }
+            
+            .translation-box:first-child {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .image-frame {
+                height: 150px;
+            }
+            
+            .chat-messages {
+                min-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <div class="logo">
+            <i class="fas fa-language fa-lg"></i>
+            <span>Traduction</span>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="text">Texte</button>
+            <button class="tab" data-tab="chatbot">Chatbot IA</button>
+        </div>
+    </div>
+    
+    <button class="tool-btn" id="historyBtn" title="Historique">
+        <i class="fas fa-history"></i>
+    </button>
+</div>
+
+<div class="container">
+    <div class="translation-area" id="textTab">
+        <div class="controls">
+            <div class="lang-controls">
+                <select class="lang-select" id="sourceLang">
+                    <option value="auto">Détecter la langue</option>
+                    <option value="fr">Français</option>
+                    <option value="en">Anglais</option>
+                    <option value="es">Espagnol</option>
+                    <option value="ar">Arabe</option>
+                    <option value="tr">Turc</option>
+                </select>
+                
+                <button class="swap-btn" id="swapLangs" title="Échanger les langues">
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
+                
+                <select class="lang-select" id="targetLang">
+                    <option value="en">Anglais</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Espagnol</option>
+                    <option value="ar">Arabe</option>
+                    <option value="tr">Turc</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="translation-boxes">
+            <div class="translation-box">
+                <div class="box-header">
+                    <div>
+                        <span class="box-lang" id="sourceLangLabel">Français</span>
+                        <span class="detected-lang" id="detectedLangLabel"></span>
+                    </div>
+                    <div class="box-tools">
+                        <button class="tool-btn" onclick="startDictation()" title="Saisie vocale">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="tool-btn" onclick="readText('inputText')" title="Écouter">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <!-- BOUTON CROIX AJOUTÉ -->
+                        <button class="tool-btn" onclick="clearAllText()" title="Effacer tout le texte">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-content">
+                    <textarea id="inputText" placeholder="Saisissez du texte"></textarea>
+                    <div class="image-container" id="imageContainer">
+                        <div class="image-frame" id="imageFrame">
+                            <div class="no-image-text" id="noImageText">
+                                <i class="fas fa-image fa-2x" style="margin-bottom: 8px; color: var(--text-secondary);"></i>
+                                <p>Image téléchargée apparaîtra ici</p>
+                            </div>
+                            <img id="uploadedImage" class="uploaded-image" src="" alt="Image téléchargée">
+                        </div>
+                        <div class="image-text" id="imageText">Texte extrait de l'image apparaîtra ici...</div>
+                        <div class="image-controls">
+                            <button class="clear-image-btn" onclick="clearImage()">
+                                <i class="fas fa-times"></i> Effacer l'image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="char-count" id="charCount">0/5000</div>
+                    <div class="file-options">
+                        <label for="imgUpload" class="file-btn" title="Importer des images">
+                            <i class="fas fa-image"></i>
+                            <span>Importer</span>
+                        </label>
+                        <input type="file" id="imgUpload" class="file-upload" accept="image/*" onchange="uploadImage()">
+                        
+                        <label for="fileUpload" class="file-btn" title="Importer des documents">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Documents</span>
+                        </label>
+                        <input type="file" id="fileUpload" class="file-upload" accept=".txt,.docx,.xlsx" onchange="uploadFile()">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="translation-box">
+                <div class="box-header">
+                    <div class="box-lang" id="targetLangLabel">Anglais</div>
+                    <div class="box-tools">
+                        <button class="tool-btn" onclick="readText('outputText')" title="Écouter la traduction">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button class="tool-btn" onclick="copyToClipboard()" title="Copier le texte">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-content">
+                    <textarea id="outputText" readonly placeholder="Traduction"></textarea>
+                </div>
+                <div class="box-footer">
+                    <div class="char-count" id="translatedCharCount">0 caractères</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="translation-area" id="chatbotTab" style="display: none;">
+        <div class="controls">
+            <div class="lang-controls">
+                <select class="lang-select" id="chatbotLang" onchange="updateChatbotLanguage()">
+                    <option value="fr">Français</option>
+                    <option value="en">Anglais</option>
+                    <option value="es">Espagnol</option>
+                    <option value="ar">Arabe</option>
+                    <option value="tr">Turc</option>
+                </select>
+                <button class="file-btn" onclick="clearChat()" title="Effacer la conversation">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Effacer</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="chat-container">
+            <div class="chat-header-info" id="chatHeader">
+                <i class="fas fa-robot"></i> Assistant IA intelligent - Discutez dans 5 langues !
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- Les messages seront ajoutés dynamiquement -->
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Tapez votre message ici..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                <button class="send-chat-btn" onclick="sendChatMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- History Sidebar -->
+    <div class="history-sidebar" id="historySidebar">
+        <div class="history-header">
+            <h3>Historique des traductions</h3>
+            <button class="close-history" onclick="toggleHistory()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="history-tabs">
+            <button class="history-tab active" data-history-tab="all">Tout</button>
+            <button class="history-tab" data-history-tab="text">Texte</button>
+            <button class="history-tab" data-history-tab="images">Images</button>
+            <button class="history-tab" data-history-tab="documents">Documents</button>
+        </div>
+        
+        <div class="history-list" id="historyList">
+            <!-- Les éléments d'historique seront ajoutés ici dynamiquement -->
+        </div>
+        
+        <div class="clear-history">
+            <button class="clear-btn" onclick="clearHistory()">
+                <i class="fas fa-trash-alt"></i>
+                <span>Effacer l'historique</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Download link (hidden) -->
+<a id="downloadLink" style="display:none"></a>
+
+<script>
+    const detectedLangNames = {
+        fr: 'Français',
+        en: 'Anglais',
+        es: 'Espagnol',
+        ar: 'Arabe',
+        tr: 'Turc'
+    };
+
+    let globalDetectedLang = null;
+    let history = JSON.parse(localStorage.getItem('translationHistory')) || [];
+    let currentHistoryTab = 'all';
+    
+    let chatHistory = [];
+    let currentChatLanguage = 'fr';
+
+    // ==========================================
+    // NOUVELLE FONCTION POUR EFFACER TOUT LE TEXTE
+    // ==========================================
+    function clearAllText() {
+        document.getElementById('inputText').value = '';
+        document.getElementById('outputText').value = '';
+        globalDetectedLang = null;
+        updateDetectedLangDisplay();
+        updateCharCount();
+        document.getElementById('translatedCharCount').textContent = '0 caractères';
+        // Retirer la classe RTL lors du nettoyage
+        document.getElementById('outputText').classList.remove('rtl-arabic');
+        document.getElementById('inputText').classList.remove('rtl-arabic');
+    }
+
+    // ==========================================
+    // MODIFICATION DE LA FONCTION CLEARIMAGE
+    // ==========================================
+    function clearImage() {
+        const imageContainer = document.getElementById('imageContainer');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const noImageText = document.getElementById('noImageText');
+        const inputTextarea = document.getElementById('inputText');
+        const imageText = document.getElementById('imageText');
+        
+        imageContainer.classList.remove('active');
+        inputTextarea.style.display = 'block';
+        uploadedImage.src = '';
+        uploadedImage.style.display = 'none';
+        noImageText.style.display = 'flex';
+        
+        imageText.textContent = "";
+        imageText.style.display = 'block';
+        inputTextarea.value = '';
+        document.getElementById('outputText').value = '';
+        
+        // RÉINITIALISER LA LANGUE DÉTECTÉE
+        globalDetectedLang = null;
+        updateDetectedLangDisplay();
+        
+        updateCharCount();
+        document.getElementById('translatedCharCount').textContent = '0 caractères';
+        
+        // Retirer les classes RTL
+        document.getElementById('outputText').classList.remove('rtl-arabic');
+        document.getElementById('inputText').classList.remove('rtl-arabic');
+        imageText.classList.remove('rtl-arabic');
+        
+        if (uploadedImage.src) {
+            URL.revokeObjectURL(uploadedImage.src);
+        }
+    }
+
+    // ==========================================
+    // AJOUT DE LA TRADUCTION AUTOMATIQUE QUAND ON CHANGE LA LANGUE CIBLE
+    // ==========================================
+    document.getElementById('targetLang').addEventListener('change', function() {
+        const inputText = document.getElementById('inputText').value;
+        if (inputText && inputText.trim() !== '') {
+            translateText();
+        }
+        // Appliquer le style RTL si la langue cible est l'arabe
+        applyRTLStyles();
+    });
+
+    // ==========================================
+    // FONCTION POUR APPLIQUER LES STYLES RTL
+    // ==========================================
+    function applyRTLStyles() {
+        const targetLang = document.getElementById('targetLang').value;
+        const sourceLang = document.getElementById('sourceLang').value;
+        const outputTextarea = document.getElementById('outputText');
+        const inputTextarea = document.getElementById('inputText');
+        const imageText = document.getElementById('imageText');
+        
+        // Appliquer RTL pour la sortie si la langue cible est l'arabe
+        if (targetLang === 'ar') {
+            outputTextarea.classList.add('rtl-arabic');
+        } else {
+            outputTextarea.classList.remove('rtl-arabic');
+        }
+        
+        // Appliquer RTL pour l'entrée si la langue source est l'arabe
+        if (sourceLang === 'ar' || (sourceLang === 'auto' && globalDetectedLang === 'ar')) {
+            inputTextarea.classList.add('rtl-arabic');
+            if (imageText) imageText.classList.add('rtl-arabic');
+        } else {
+            inputTextarea.classList.remove('rtl-arabic');
+            if (imageText) imageText.classList.remove('rtl-arabic');
+        }
+    }
+
+    // ==========================================
+    // TOUTES LES FONCTIONS EXISTANTES RESTENT IDENTIQUES
+    // ==========================================
+function updateChatbotLanguage() {
+        const chatbotLang = document.getElementById('chatbotLang').value;
+        currentChatLanguage = chatbotLang;
+        
+        const placeholders = {
+            fr: "Tapez votre message ici...",
+            en: "Type your message here...",
+            es: "Escriba su mensaje aquí...",
+            ar: "اكتب رسالتك هنا...",
+            tr: "Mesajınızı buraya yazın..."
+        };
+        document.getElementById('chatInput').placeholder = placeholders[chatbotLang] || "Type your message here...";
+        
+        const headers = {
+            fr: "Assistant IA intelligent - Discutez dans 5 langues !",
+            en: "Smart AI Assistant - Chat in 5 languages!",
+            es: "Asistente IA inteligente - ¡Chatea en 5 idiomas!",
+            ar: "مساعد ذكي للذكاء الاصطناعي - دردش بـ 5 لغات!",
+            tr: "Akıllı AI Asistanı - 5 dilde sohbet edin!"
+        };
+        document.getElementById('chatHeader').innerHTML = `<i class="fas fa-robot"></i> ${headers[chatbotLang] || headers.fr}`;
+        
+        // --- AJOUT : GESTION DE L'ALIGNEMENT ARABE (RTL) ---
+        const chatInput = document.getElementById('chatInput');
+        const allMessages = document.querySelectorAll('.message');
+        
+        if (chatbotLang === 'ar') {
+            // Appliquer RTL à l'input
+            chatInput.style.direction = 'rtl';
+            chatInput.style.textAlign = 'right';
+            // Appliquer RTL aux messages existants
+            allMessages.forEach(msg => msg.classList.add('rtl-arabic'));
+        } else {
+            // Revenir à LTR pour les autres langues
+            chatInput.style.direction = 'ltr';
+            chatInput.style.textAlign = 'left';
+            allMessages.forEach(msg => msg.classList.remove('rtl-arabic'));
+        }
+        // ----------------------------------------------------
+        
+        updateWelcomeMessage();
+    }
+
+
+    function updateWelcomeMessage() {
+        const chatMessages = document.getElementById('chatMessages');
+        const firstMessage = chatMessages.querySelector('.message.bot');
+        
+        if (firstMessage && firstMessage.textContent.includes('Bonjour') || 
+            firstMessage && firstMessage.textContent.includes('Hello') ||
+            firstMessage && firstMessage.textContent.includes('Hola') ||
+            firstMessage && firstMessage.textContent.includes('مرحبًا') ||
+            firstMessage && firstMessage.textContent.includes('Merhaba')) {
+            
+            const welcomeMessages = {
+                fr: "👋 Bonjour ! Je suis votre assistant IA spécialisé en traduction. Je peux vous aider avec tout ce qui concerne les langues, la traduction de texte, d'images et de documents. Posez-moi vos questions !",
+                en: "👋 Hello! I'm your AI assistant specialized in translation. I can help you with everything related to languages, text translation, images, and documents. Ask me anything!",
+                es: "👋 ¡Hola! Soy tu asistente de IA especializado en traducción. Puedo ayudarte con todo lo relacionado con idiomas, traducción de texto, imágenes y documentos. ¡Pregúntame lo que quieras!",
+                ar: "👋 مرحبًا! أنا مساعدك الذكي المتخصص في الترجمة. يمكنني مساعدتك في كل ما يتعلق باللغات وترجمة النصوص والصور والمستندات. اسألني أي شيء!",
+                tr: "👋 Merhaba! Ben çeviri konusunda uzmanlaşmış AI asistanınızım. Diller, metin çevirisi, görüntüler ve belgelerle ilgili her konuda size yardımcı olabilirim. Bana her şeyي sorabilirsiniz!"
+            };
+            
+            firstMessage.textContent = welcomeMessages[currentChatLanguage] || welcomeMessages.fr;
+        }
+    }
+
+    function addWelcomeMessage() {
+        const welcomeMessages = {
+            fr: "👋 Bonjour ! Je suis votre assistant IA spécialisé en traduction. Je peux vous aider avec tout ce qui concerne les langues, la traduction de texte, d'images et de documents. Posez-moi vos questions !",
+            en: "👋 Hello! I'm your AI assistant specialized in translation. I can help you with everything related to languages, text translation, images, and documents. Ask me anything!",
+            es: "👋 ¡Hola! Soy tu asistente de IA especializado en traducción. Puedo ayudarte con todo lo relacionado con idiomas, traducción de texto, imágenes y documentos. ¡Pregúntame lo que quieras!",
+            ar: "👋 مرحبًا! أنا مساعدك الذكي المتخصص في الترجمة. يمكنني مساعدتك في كل ما يتعلق باللغات وترجمة النصوص والصور والمستندات. اسألني أي شيء!",
+            tr: "👋 Merhaba! Ben çeviri konusunda uzmanlaşmış AI asistanınızım. Diller, metin çevirisi, görüntüler ve belgelerle ilgili her konuda size yardımcı olabilirim. Bana her şeyي sorabilirsiniz!"
+        };
+        
+        addMessageToChat(welcomeMessages[currentChatLanguage] || welcomeMessages.fr, 'bot');
+    }
+
+const knowledgeBase = {
+        // --- CATÉGORIES D'ORIGINE INTACTES ---
+        greeting: {
+            priority: 1,
+            keywords: {
+                fr: ['bonjour', 'salut', 'coucou', 'hello', 'bonsoir', 'bonjour\\b'],
+                en: ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'hello\\b'],
+                es: ['hola', 'buenos días', 'buenas tardes', 'buenas noches', 'hola\\b'],
+                ar: ['مرحبا', 'أهلا', 'سلام', 'مساء الخير', 'مرحبا\\b'],
+                tr: ['merhaba', 'selam', 'günaydın', 'iyi günler', 'merhaba\\b']
+            },
+            responses: {
+                fr: [
+                    "Bonjour ! Comment puis-je vous aider avec vos traductions aujourd'hui ?",
+                    "Salut ! Prêt à traduire du texte, des images ou des documents ?",
+                    "Bonjour ! Je suis là pour vous aider avec toutes vos questions sur la traduction."
+                ],
+                en: [
+                    "Hello! How can I help you with your translations today?",
+                    "Hi! Ready to translate text, images or documents?",
+                    "Hello! I'm here to help you with all your translation questions."
+                ],
+                es: [
+                    "¡Hola! ¿Cómo puedo ayudarte con tus traducciones hoy?",
+                    "¡Hola! ¿Listo para traducir texto, imágenes o documentos?",
+                    "¡Hola! Estoy aquí para ayudarte con todas tus preguntas sobre traducción."
+                ],
+                ar: [
+                    "مرحبا! كيف يمكنني مساعدتك في ترجماتك اليوم؟",
+                    "أهلا! مستعد لترجمة النصوص أو الصور أو المستندات؟",
+                    "مرحبا! أنا هنا لمساعدتك في جميع أسئلتك حول الترجمة."
+                ],
+                tr: [
+                    "Merhaba! Bugün çevirilerinizde size nasıl yardımcı olabilirim?",
+                    "Selam! Metin, resim veya belgeleri çevirmeye hazır mısınız?",
+                    "Merhaba! Tüm çeviri sorularınızda size yardımcı olmak için buradayım."
+                ]
+            }
+        },
+        thanks: {
+            priority: 1,
+            keywords: {
+                fr: ['merci', 'merci beaucoup', 'je te remercie', 'merci\\b'],
+                en: ['thank you', 'thanks', 'thank', 'appreciate', 'thanks\\b'],
+                es: ['gracias', 'agradezco', 'muchas gracias', 'gracias\\b'],
+                ar: ['شكرا', 'أشكرك', 'شكرا جزيلا', 'شكرا\\b'],
+                tr: ['teşekkür ederim', 'sağ ol', 'teşekkürler', 'teşekkür\\b']
+            },
+            responses: {
+                fr: [
+                    "De rien ! N'hésitez pas si vous avez d'autres questions sur la traduction.",
+                    "Je vous en prie ! Continuez à utiliser notre application de traduction.",
+                    "Avec plaisir ! N'oubliez pas que je peux aussi vous aider avec les images et documents."
+                ],
+                en: [
+                    "You're welcome! Don't hesitate if you have other translation questions.",
+                    "My pleasure! Keep using our translation application.",
+                    "You're welcome! Remember I can also help with images and documents."
+                ],
+                es: [
+                    "¡De nada! No dudes si tienes otras preguntas sobre traducción.",
+                    "¡Es un placer! Sigue usando nuestra aplicación de traducción.",
+                    "¡De nada! Recuerda que también puedo ayudar con imágenes y documentos."
+                ],
+                ar: [
+                    "عفوا! لا تتردد إذا كان لديك أسئلة أخرى حول الترجمة.",
+                    "بكل سرور! استمر في استخدام تطبيق الترجمة الخاص بنا.",
+                    "عفوًا! تذكر أنه يمكنني أيضًا المساعدة في الصور والمستندات."
+                ],
+                tr: [
+                    "Rica ederim! Çeviriyle ilgili başka sorularınız varsa çekinmeyin.",
+                    "Benim için zevk! Çeviri uygulamamızı kullanmaya devam edin.",
+                    "Rica ederim! Görüntüler ve belgelerle de yardımcı olabileceğimi unutmayın."
+                ]
+            }
+        },
+        help: {
+            priority: 2,
+            keywords: {
+                fr: ['aide', 'aider', 'comment', 'comment faire', 'aide-moi', 'aidez-moi', '\\baide\\b'],
+                en: ['help', 'assist', 'how to', 'how do i', 'help me', '\\bhelp\\b'],
+                es: ['ayuda', 'ayudar', 'cómo', 'cómo hacer', 'ayúdame', '\\bayuda\\b'],
+                ar: ['مساعدة', 'ساعد', 'كيف', 'كيف أفعل', 'ساعدني', 'مساعدة\\b'],
+                tr: ['yardım', 'yardım et', 'nasıl', 'nasıl yapılır', 'bana yardım et', 'yardım\\b']
+            },
+            responses: {
+                fr: [
+                    "Je peux vous aider avec :\n1. Traduction de texte dans 5 langues\n2. Traduction d'images avec OCR\n3. Traduction de documents (Word, Excel)\n4. Saisie vocale et synthèse vocale\n5. Historique des traductions\n\nQue souhaitez-vous faire ?",
+                    "Notre application propose :\n• Traduction instantanée\n• Reconnaissance de texte dans les images\n• Support de plusieurs formats de documents\n• Interface multilingue\n\nDites-moi ce qui vous intéresse !",
+                    "Voici mes fonctionnalités :\n✓ Traduire du texte entre 5 langues\n✓ Extraire et traduire du texte d'images\n✓ Traduire des documents entiers\n✓ Écouter les traductions\n✓ Consulter l'historique\n\nComment puis-je vous aider spécifiquement ?"
+                ],
+                en: [
+                    "I can help you with:\n1. Text translation in 5 languages\n2. Image translation with OCR\n3. Document translation (Word, Excel)\n4. Voice input and text-to-speech\n5. Translation history\n\nWhat would you like to do?",
+                    "Our application offers:\n• Instant translation\n• Text recognition in images\n• Multiple document format support\n• Multilingual interface\n\nTell me what interests you!",
+                    "Here are my features:\n✓ Translate text between 5 languages\n✓ Extract and translate text from images\n✓ Translate entire documents\n✓ Listen to translations\n✓ View history\n\nHow can I help you specifically?"
+                ],
+                es: [
+                    "Puedo ayudarte con:\n1. Traducción de texto en 5 idiomas\n2. Traducción de imágenes con OCR\n3. Traducción de documentos (Word, Excel)\n4. Entrada de voz y texto a voz\n5. Historial de traducciones\n\n¿Qué te gustaría hacer?",
+                    "Nuestra application ofrece:\n• Traducción instantánea\n• Reconocimiento de texto en imágenes\n• Soporte para múltiples formatos de documentos\n• Interfaz multilingüe\n\n¡Dime qué te interesa!",
+                    "Estas son mis funciones:\n✓ Traducir texto entre 5 idiomas\n✓ Extraer y traducir texto de imágenes\n✓ Traducir documentos completos\n✓ Escuchar traducciones\n✓ Ver historial\n\n¿Cómo puedo ayudarte específicamente?"
+                ],
+                ar: [
+                    "يمكنني مساعدتك في:\n1. ترجمة النص بـ 5 لغات\n2. ترجمة الصور مع OCR\n3. ترجمة المستندات (Word، Excel)\n4. إدخال الصوت وتحويل النص إلى كلام\n5. سجل الترجمة\n\nماذا تريد أن تفعل؟",
+                    "يقدم تطبيقنا:\n• ترجمة فورية\n• التعرف على النص في الصور\n• دعم تنسيقات المستندات المتعددة\n• واجهة متعددة اللغات\n\nأخبرني بما يهمك!",
+                    "ها هي ميزاتي:\n✓ ترجمة النص بين 5 لغات\n✓ استخراج وترجمة النص من الصور\n✓ ترجمة المستندات الكاملة\n✓ الاستماع إلى الترجمات\n✓ عرض السجل\n\nكيف يمكنني مساعدتك على وجه التحديد؟"
+                ],
+                tr: [
+                    "Size şu konularda yardımcı olabilirim:\n1. 5 dilde metin çevirisi\n2. OCR ile görüntü çevirisi\n3. Belge çevirisi (Word, Excel)\n4. Ses girişi ve metinden sese\n5. Çeviri geçmişi\n\nNe yapmak istiyorsunuz?",
+                    "Uygulamamız şunları sunar:\n• Anında çeviri\n• Görüntülerde metin tanıma\n• Birden çok belge formatı desteği\n• Çok dilli arayüz\n\nNeyle ilgilendiğinizi söyleyin!",
+                    "İşte özelliklerim:\n✓ 5 dil arasında metin çevirisi\n✓ Görüntülerden metin çıkarma ve çevirme\n✓ Tüm belgeleri çevirme\n✓ Çevirileri dinleme\n✓ Geçmişi görüntüleme\n\nSize özellikle nasıl yardımcı olabilirim?"
+                ]
+            }
+        },
+
+        // --- NOUVELLES CATÉGORIES "COMMENT FAIRE..." (Priorité 8 - Très haute) ---
+        // Cette section répond spécifiquement quand l'utilisateur demande "Comment..." + l'option
+        
+        procedure_image: {
+            priority: 8,
+            keywords: {
+                fr: ['comment image', 'comment faire image', 'procédure image', 'tuto image', 'comment photo', 'comment ocr'],
+                en: ['how to image', 'how to photo', 'image procedure', 'steps for image', 'how to ocr'],
+                es: ['cómo imagen', 'cómo foto', 'procedimiento imagen', 'pasos imagen'],
+                ar: ['كيف صورة', 'كيفية صورة', 'إجراءات صورة', 'خطوات صورة'],
+                tr: ['nasıl görüntü', 'nasıl fotoğraf', 'görüntü prosedürü', 'fotoğraf adımları']
+            },
+            responses: {
+                fr: [
+                    "📸 **Procédure pour les images :**\n1. Allez dans l'onglet **Texte**.\n2. Cliquez sur l'icône **Importer** (🖼️) en bas.\n3. Choisissez votre image.\n4. L'IA extrait et traduit le texte automatiquement !"
+                ],
+                en: [
+                    "📸 **Procedure for images:**\n1. Go to the **Text** tab.\n2. Click the **Import** icon (🖼️) at the bottom.\n3. Choose your image.\n4. AI extracts and translates text automatically!"
+                ],
+                es: [
+                    "📸 **Procedimiento para imágenes:**\n1. Ve a la pestaña **Texto**.\n2. Haz clic en **Importar** (🖼️).\n3. Elige tu imagen.\n4. ¡La IA extrae y traduce el texto automáticamente!"
+                ],
+                ar: [
+                    "📸 **إجراءات الصور:**\n1. انتقل إلى علامة التبويب **نص**.\n2. انقر فوق رمز **استيراد** (🖼️) في الأسفل.\n3. اختر صورتك.\n4. يستخرج الذكاء الاصطناعي النص ويترجمه تلقائيًا!"
+                ],
+                tr: [
+                    "📸 **Görüntüler için prosedür:**\n1. **Metin** sekmesine gidin.\n2. Alttaki **İçe Aktar** simgesine (🖼️) tıklayın.\n3. Resminizi seçin.\n4. AI metni çıkarır ve otomatik olarak çevirir!"
+                ]
+            }
+        },
+
+        procedure_document: {
+            priority: 8,
+            keywords: {
+                fr: ['comment document', 'comment excel', 'comment word', 'comment fichier', 'procédure document', 'tuto excel'],
+                en: ['how to document', 'how to excel', 'how to word', 'how to file', 'document procedure'],
+                es: ['cómo documento', 'cómo excel', 'cómo archivo', 'procedimiento documento'],
+                ar: ['كيف مستند', 'كيف excel', 'كيف ملف', 'إجراءات مستند'],
+                tr: ['nasıl belge', 'nasıl excel', 'nasıl dosya', 'belge prosedürü']
+            },
+            responses: {
+                fr: [
+                    "📄 **Procédure pour les documents (Excel/Word) :**\n1. Cliquez sur le bouton **Documents** (📄) sous la zone de texte.\n2. Sélectionnez votre fichier `.xlsx` ou `.docx`.\n3. La traduction démarre.\n4. Le fichier traduit se télécharge automatiquement."
+                ],
+                en: [
+                    "📄 **Procedure for documents (Excel/Word):**\n1. Click the **Documents** button (📄) below the text area.\n2. Select your `.xlsx` or `.docx` file.\n3. Translation starts.\n4. The translated file downloads automatically."
+                ],
+                es: [
+                    "📄 **Procedimiento para documentos:**\n1. Haz clic en el botón **Documentos** (📄) abajo.\n2. Selecciona tu archivo.\n3. La traducción comienza.\n4. El archivo se descarga automáticamente."
+                ],
+                ar: [
+                    "📄 **إجراءات المستندات (Excel/Word):**\n1. انقر فوق زر **المستندات** (📄) أسفل منطقة النص.\n2. حدد ملفك.\n3. تبدأ الترجمة.\n4. يتم تنزيل الملف تلقائيًا."
+                ],
+                tr: [
+                    "📄 **Belgeler için prosedür:**\n1. Metin alanının altındaki **Belgeler** (📄) düğmesine tıklayın.\n2. Dosyanızı seçin.\n3. Çeviri başlar.\n4. Dosya otomatik olarak indirilir."
+                ]
+            }
+        },
+
+        procedure_text: {
+            priority: 8,
+            keywords: {
+                fr: ['comment texte', 'comment traduire', 'comment écrire', 'procédure texte', 'tuto texte'],
+                en: ['how to text', 'how to translate', 'how to write', 'text procedure'],
+                es: ['cómo texto', 'cómo traducir', 'procedimiento texto'],
+                ar: ['كيف نص', 'كيف تترجم', 'إجراءات نص'],
+                tr: ['nasıl metin', 'nasıl çevrilir', 'metin prosedürü']
+            },
+            responses: {
+                fr: [
+                    "✍️ **Procédure pour le texte :**\n1. Choisissez les langues en haut.\n2. Écrivez ou collez votre texte dans la case de gauche.\n3. La traduction apparaît instantanément à droite."
+                ],
+                en: [
+                    "✍️ **Procedure for text:**\n1. Choose languages at the top.\n2. Write or paste text in the left box.\n3. Translation appears instantly on the right."
+                ],
+                es: [
+                    "✍️ **Procedimiento para texto:**\n1. Elige idiomas arriba.\n2. Escribe tu texto a la izquierda.\n3. La traducción aparece a la derecha."
+                ],
+                ar: [
+                    "✍️ **إجراءات النص:**\n1. اختر اللغات في الأعلى.\n2. اكتب النص الخاص بك على اليسار.\n3. تظهر الترجمة على اليمين."
+                ],
+                tr: [
+                    "✍️ **Metin için prosedür:**\n1. Üstten dilleri seçin.\n2. Metninizi sola yazın.\n3. Çeviri sağda görünür."
+                ]
+            }
+        },
+
+        procedure_audio: {
+            priority: 8,
+            keywords: {
+                fr: ['comment audio', 'comment voix', 'comment parler', 'procédure audio', 'tuto micro'],
+                en: ['how to audio', 'how to voice', 'how to speak', 'audio procedure'],
+                es: ['cómo audio', 'cómo voz', 'procedimiento audio'],
+                ar: ['كيف صوت', 'كيف تتحدث', 'إجراءات صوت'],
+                tr: ['nasıl ses', 'nasıl konuş', 'ses prosedürü']
+            },
+            responses: {
+                fr: [
+                    "🎤 **Procédure Audio :**\n• **Parler** : Cliquez sur le micro (🎤) et parlez.\n• **Écouter** : Cliquez sur le haut-parleur (🔉) pour entendre la traduction."
+                ],
+                en: [
+                    "🎤 **Audio Procedure:**\n• **Speak**: Click the mic (🎤) and talk.\n• **Listen**: Click the speaker (🔉) to hear the translation."
+                ],
+                es: [
+                    "🎤 **Procedimiento de Audio:**\n• **Hablar**: Haz clic en el micrófono (🎤).\n• **Escuchar**: Haz clic en el altavoz (🔉)."
+                ],
+                ar: [
+                    "🎤 **إجراءات الصوت:**\n• **تحدث**: انقر فوق الميكروفون (🎤).\n• **استمع**: انقر فوق مكبر الصوت (🔉)."
+                ],
+                tr: [
+                    "🎤 **Ses Prosedürü:**\n• **Konuş**: Mikrofona (🎤) tıklayın.\n• **Dinle**: Hoparlöre (🔉) tıklayın."
+                ]
+            }
+        },
+
+        // --- CATÉGORIES D'OPTIONS (Inchangées - Priorité 5) ---
+        // Elles répondent aux questions générales sur les fonctionnalités (sans "comment")
+        
+        image: {
+            priority: 5,
+            keywords: {
+                fr: ['image', 'photo', 'ocr', 'scanner', 'texte dans l\'image', 'capture', 'png', 'jpg', '\\bimage\\b'],
+                en: ['image', 'photo', 'ocr', 'scan', 'text in image', 'screenshot', 'png', 'jpg', '\\bimage\\b'],
+                es: ['imagen', 'foto', 'ocr', 'escanear', 'captura', 'png', 'jpg', '\\bimagen\\b'],
+                ar: ['صورة', 'ocr', 'مسح', 'لقطة شاشة', 'بى ان جى', 'جيه بى جى', '\\bصورة\\b'],
+                tr: ['görüntü', 'fotoğraf', 'ocr', 'tarama', 'ekran görüntüsü', 'png', 'jpg', '\\bgörüntü\\b']
+            },
+            responses: {
+                fr: [
+                    "**Fonctionnalité Image OCR** :\nJe peux extraire le texte de n'importe quelle image (JPG, PNG) et le traduire.\n*Pour savoir comment faire, demandez 'Comment traduire une image ?'*"
+                ],
+                en: [
+                    "**Image OCR Feature**:\nI can extract text from any image (JPG, PNG) and translate it.\n*To know how, ask 'How to translate an image?'*"
+                ],
+                es: [
+                    "**Función de Imagen OCR**:\nPuedo extraer texto de cualquier imagen y traducirlo.\n*Para saber cómo, pregunta '¿Cómo traducir una imagen?'*"
+                ],
+                ar: [
+                    "**ميزة صورة OCR**:\nيمكنني استخراج النص من أي صورة وترجمته.\n*لمعرفة الكيفية، اسأل 'كيف تترجم صورة؟'*"
+                ],
+                tr: [
+                    "**Görüntü OCR Özelliği**:\nHerhangi bir görüntüden metin çıkarabilir ve çevirebilirim.\n*Nasıl yapılacağını öğrenmek için 'Bir görüntü nasıl çevrilir?' diye sorun.*"
+                ]
+            }
+        },
+
+        document: {
+            priority: 5,
+            keywords: {
+                fr: ['document', 'fichier', 'excel', 'word', 'xlsx', '.docx', '.xlsx', '.txt', '\\bdocument\\b'],
+                en: ['document', 'file', 'excel', 'word', 'xlsx', '.docx', '.xlsx', '.txt', '\\bdocument\\b'],
+                es: ['documento', 'archivo', 'excel', 'word', 'xlsx', '.docx', '\\bdocumento\\b'],
+                ar: ['مستند', 'ملف', 'excel', 'word', 'xlsx', '.docx', '\\bمستند\\b'],
+                tr: ['belge', 'dosya', 'excel', 'word', 'xlsx', '.docx', '\\bbelge\\b']
+            },
+            responses: {
+                fr: [
+                    "**Fonctionnalité Documents** :\nJe supporte les fichiers Excel (.xlsx) et Word (.docx) en conservant leur mise en forme.\n*Pour la procédure, demandez 'Comment traduire un document ?'*"
+                ],
+                en: [
+                    "**Document Feature**:\nI support Excel (.xlsx) and Word (.docx) files while keeping their formatting.\n*For procedure, ask 'How to translate a document?'*"
+                ],
+                es: [
+                    "**Función de Documentos**:\nSoporto archivos Excel y Word manteniendo su formato.\n*Para el procedimiento, pregunta '¿Cómo traducir un documento?'*"
+                ],
+                ar: [
+                    "**ميزة المستندات**:\nأنا أدعم ملفات Excel و Word مع الحفاظ على تنسيقها.\n*للإجراءات، اسأل 'كيف تترجم مستند؟'*"
+                ],
+                tr: [
+                    "**Belge Özelliği**:\nExcel ve Word dosyalarını biçimlendirmelerini koruyarak destekliyorum.\n*Prosedür için 'Bir belge nasıl çevrilir?' diye sorun.*"
+                ]
+            }
+        },
+
+        translation: {
+            priority: 3,
+            keywords: {
+                fr: ['traduire', 'traduction', 'langue', 'mot', 'phrase', '\\btraduire\\b', '\\btraduction\\b'],
+                en: ['translate', 'translation', 'language', 'word', 'phrase', '\\btranslate\\b', '\\btranslation\\b'],
+                es: ['traducir', 'traducción', 'idioma', 'palabra', 'frase', '\\btraducir\\b', '\\btraducción\\b'],
+                ar: ['ترجمة', 'لغة', 'كلمة', 'جملة', 'ترجمة\\b', 'لغة\\b'],
+                tr: ['çevirmek', 'çeviri', 'dil', 'kelime', 'ifade', 'çevirmek\\b', 'çeviri\\b']
+            },
+            responses: {
+                fr: [
+                    "**Traduction de texte** :\nJe traduis instantanément entre 5 langues.\n*Pour le mode d'emploi, demandez 'Comment traduire du texte ?'*"
+                ],
+                en: [
+                    "**Text Translation**:\nI translate instantly between 5 languages.\n*For instructions, ask 'How to translate text?'*"
+                ],
+                es: [
+                    "**Traducción de texto**:\nTraduzco instantáneamente entre 5 idiomas.\n*Para instrucciones, pregunta '¿Cómo traducir texto?'*"
+                ],
+                ar: [
+                    "**ترجمة النص**:\nأترجم فورًا بين 5 لغات.\n*للتعليمات، اسأل 'كيف تترجم النص؟'*"
+                ],
+                tr: [
+                    "**Metin Çevirisi**:\n5 dil arasında anında çeviri yaparım.\n*Talimatlar için 'Metin nasıl çevrilir?' diye sorun.*"
+                ]
+            }
+        },
+
+        audio: {
+            priority: 5,
+            keywords: {
+                fr: ['audio', 'voix', 'microphone', 'écouter', 'parler', 'synthèse vocale', 'lecture', 'dictée', 'micro'],
+                en: ['audio', 'voice', 'microphone', 'listen', 'speak', 'text-to-speech', 'read', 'dictation', 'mic'],
+                es: ['audio', 'voz', 'micrófono', 'escuchar', 'hablar', 'texto a voz', 'leer', 'dictado', 'mic'],
+                ar: ['صوت', 'صوت', 'ميكروفون', 'استمع', 'تحدث', 'نص إلى كلام', 'اقرأ', 'إملاء', 'ميكروفون'],
+                tr: ['ses', 'ses', 'mikrofon', 'dinle', 'konuş', 'metinden sese', 'oku', 'dikte', 'mikrofon']
+            },
+            responses: {
+                fr: [
+                    "**Audio & Voix** :\nJe dispose de la reconnaissance vocale et de la lecture audio.\n*Demandez 'Comment utiliser l'audio ?' pour plus de détails.*"
+                ],
+                en: [
+                    "**Audio & Voice**:\nI have voice recognition and audio playback.\n*Ask 'How to use audio?' for details.*"
+                ],
+                es: [
+                    "**Audio y Voz**:\nTengo reconocimiento de voz y reproducción de audio.\n*Pregunta '¿Cómo usar el audio?' para detalles.*"
+                ],
+                ar: [
+                    "**الصوت والكلام**:\nلدي ميزة التعرف على الصوت وتشغيل الصوت.\n*اسأل 'كيف تستخدم الصوت؟' للتفاصيل.*"
+                ],
+                tr: [
+                    "**Ses ve Konuşma**:\nSes tanıma ve ses çalma özelliklerine sahibim.\n*Ayrıntılar için 'Ses nasıl kullanılır?' diye sorun.*"
+                ]
+            }
+        },
+        
+        file_types: {
+            priority: 5,
+            keywords: {
+                fr: ['quels fichiers', 'types de fichiers', 'extensions', 'formats', 'format supporté', 'pdf', 'docx', 'xlsx', 'jpeg', 'png'],
+                en: ['what files', 'file types', 'extensions', 'formats', 'supported formats', 'pdf', 'docx', 'xlsx', 'jpeg', 'png'],
+                es: ['qué archivos', 'tipos de archivos', 'extensiones', 'formatos', 'formatos soportados', 'pdf'],
+                ar: ['ما هي الملفات', 'أنواع الملفات', 'امتدادات', 'تنسيقات', 'تنسيق مدعوم', 'pdf'],
+                tr: ['hangi dosyalar', 'dosya türleri', 'uzantılar', 'formatlar', 'desteklenen formatlar', 'pdf']
+            },
+            responses: {
+                fr: [
+                    "📂 **Formats supportés :**\n\n• **Documents :** Word (`.docx`), Excel (`.xlsx`), Texte brut (`.txt`).\n• **Images :** JPG, JPEG, PNG.\n\nNote : Les fichiers PDF ne sont pas supportés directement, mais les Excels et Words sont parfaitement traduits !",
+                    "Vous pouvez importer des fichiers **Word (.docx)** et **Excel (.xlsx)** pour conserver la mise en forme, ou des fichiers **.txt**. Pour l'OCR, nous acceptons toutes les images standards (JPG/PNG)."
+                ],
+                en: [
+                    "📂 **Supported Formats:**\n\n• **Documents:** Word (`.docx`), Excel (`.xlsx`), Plain Text (`.txt`).\n• **Images:** JPG, JPEG, PNG.\n\nNote: PDF files are not directly supported, but Excel and Word files are translated perfectly!",
+                    "You can upload **Word (.docx)** and **Excel (.xlsx)** files to keep formatting, or **.txt** files. For OCR, we accept all standard images (JPG/PNG)."
+                ],
+                es: [
+                    "📂 **Formatos soportados:**\n\n• **Documentos:** Word (`.docx`), Excel (`.xlsx`), Texto simple (`.txt`).\n• **Imágenes:** JPG, JPEG, PNG.\n\nNota: Los PDF no se soportan directamente, ¡pero Excel y Word se traducen perfectamente!",
+                    "Puedes subir archivos **Word (.docx)** y **Excel (.xlsx)** para mantener el formato, o archivos **.txt**."
+                ],
+                ar: [
+                    "📂 **التنسيقات المدعومة:**\n\n• **المستندات:** Word (`.docx`)، Excel (`.xlsx`)، نص عادي (`.txt`).\n• **الصور:** JPG، JPEG، PNG.\n\nملاحظة: ملفات PDF غير مدعومة مباشرة، لكن يتم ترجمة Excel و Word بشكل مثالي!",
+                    "يمكنك تحميل ملفات **Word (.docx)** و **Excel (.xlsx)** للحفاظ على التنسيق، أو ملفات **.txt**."
+                ],
+                tr: [
+                    "📂 **Desteklenen Formatlar:**\n\n• **Belgeler:** Word (`.docx`), Excel (`.xlsx`), Düz Metin (`.txt`).\n• **Resimler:** JPG, JPEG, PNG.\n\nNot: PDF dosyaları doğrudan desteklenmez, ancak Excel ve Word mükemmel şekilde çevrilir!",
+                    "Biçimlendirmeyi korumak için **Word (.docx)** ve **Excel (.xlsx)** dosyaları veya **.txt** dosyaları yükleyebilirsiniz."
+                ]
+            }
+        },
+        languages: {
+            priority: 4,
+            keywords: {
+                fr: ['quelles langues', 'combien de langues', 'liste des langues', 'supportes-tu', 'disponibles'],
+                en: ['which languages', 'how many languages', 'list languages', 'do you support', 'available'],
+                es: ['qué idiomas', 'cuántos idiomas', 'lista de idiomas', 'soportas', 'disponibles'],
+                ar: ['ما هي اللغات', 'كم عدد اللغات', 'قائمة اللغات', 'تدعم', 'متاحة'],
+                tr: ['hangi diller', 'kaç dil', 'dil listesi', 'destekliyor', 'mevcut']
+            },
+            responses: {
+                fr: [
+                    "Actuellement, je supporte parfaitement 5 langues : **Français, Anglais, Espagnol, Arabe et Turc**. Je peux traduire du texte, des images et des documents entre n'importe laquelle de ces langues.",
+                    "Notre système est optimisé pour 5 langues clés : Français 🇫🇷, Anglais 🇬🇧, Espagnol 🇪🇸, Arabe 🇸🇦 et Turc 🇹🇷."
+                ],
+                en: [
+                    "Currently, I fully support 5 languages: **French, English, Spanish, Arabic, and Turkish**. I can translate text, images, and documents between any of these.",
+                    "Our system is optimized for 5 key languages: French 🇫🇷, English 🇬🇧, Spanish 🇪🇸, Arabic 🇸🇦, and Turkish 🇹🇷."
+                ],
+                es: [
+                    "Actualmente, soporto perfectamente 5 idiomas: **Francés, Inglés, Español, Árabe y Turco**. Puedo traducir texto, imágenes y documentos entre cualquiera de ellos.",
+                    "Nuestro sistema está optimizado para 5 idiomas clave: Francés 🇫🇷, Inglés 🇬🇧, Español 🇪🇸, Árabe 🇸🇦 y Turco 🇹🇷."
+                ],
+                ar: [
+                    "حالياً، أدعم 5 لغات بشكل كامل: **الفرنسية والإنجليزية والإسبانية والعربية والتركية**. يمكنني ترجمة النصوص والصور والمستندات بين أي من هذه اللغات.",
+                    "نظامنا محسن لـ 5 لغات رئيسية: الفرنسية 🇫🇷 والإنجليزية 🇬🇧 والإسبانية 🇪🇸 والعربية 🇸🇦 والتركية 🇹🇷."
+                ],
+                tr: [
+                    "Şu anda 5 dili tam olarak destekliyorum: **Fransızca, İngilizce, İspanyolca, Arapça ve Türkçe**. Bunlar arasında metin, resim ve belge çevirebilirim.",
+                    "Sistemimiz 5 temel dil için optimize edilmiştir: Fransızca 🇫🇷, İngilizce 🇬🇧, İspanyolca 🇪🇸, Arapça 🇸🇦 ve Türkçe 🇹🇷."
+                ]
+            }
+        },
+        privacy: {
+            priority: 6,
+            keywords: {
+                fr: ['sécurité', 'privé', 'confidentialité', 'stocker', 'sauvegarder', 'données', 'mes informations', 'serveur'],
+                en: ['security', 'privacy', 'confidential', 'store', 'save', 'data', 'my info', 'server'],
+                es: ['seguridad', 'privacidad', 'confidencial', 'almacenar', 'guardar', 'datos', 'mis datos', 'servidor'],
+                ar: ['أمان', 'خصوصية', 'سري', 'تخزين', 'حفظ', 'بيانات', 'معلوماتي', 'خادم'],
+                tr: ['güvenlik', 'gizlilik', 'mahremiyet', 'saklama', 'kaydetme', 'veri', 'bilgilerim', 'sunucu']
+            },
+            responses: {
+                fr: [
+                    "🛡️ **Vos données sont en sécurité.**\nNous ne stockons PAS vos textes ou documents sur nos serveurs après la traduction. L'historique que vous voyez est stocké uniquement localement dans votre propre navigateur.",
+                    "La confidentialité est notre priorité. Vos documents Excel et images sont traités en mémoire vive et effacés immédiatement après la traduction."
+                ],
+                en: [
+                    "🛡️ **Your data is safe.**\nWe do NOT store your texts or documents on our servers after translation. The history you see is stored only locally in your own browser.",
+                    "Privacy is our priority. Your Excel documents and images are processed in RAM and deleted immediately after translation."
+                ],
+                es: [
+                    "🛡️ **Tus datos están seguros.**\nNO almacenamos tus textos o documentos en nuestros servidores después de la traducción. El historial que ves se almacena solo localmente en tu navegador.",
+                    "La privacidad es nuestra prioridad. Tus documentos Excel e imágenes se procesan en la memoria RAM y se eliminan inmediatamente después."
+                ],
+                ar: [
+                    "🛡️ **بياناتك آمنة.**\nنحن لا نقوم بتخزين نصوصك أو مستنداتك على خوادمنا بعد الترجمة. السجل الذي تراه مخزن محليًا فقط في متصفحك الخاص.",
+                    "الخصوصية هي أولويتنا. تتم معالجة مستندات Excel والصور الخاصة بك في الذاكرة العشوائية وحذفها فورًا بعد الترجمة."
+                ],
+                tr: [
+                    "🛡️ **Verileriniz güvende.**\nÇeviriden sonra metinlerinizi veya belgelerinizi sunucularımızda SAKLAMIYORUZ. Gördüğünüz geçmiş yalnızca kendi tarayıcınızda yerel olarak saklanır.",
+                    "Gizlilik önceliğimizdir. Excel belgeleriniz ve resimleriniz RAM'de işlenir ve çeviriden hemen sonra silinir."
+                ]
+            }
+        },
+        cost: {
+            priority: 4,
+            keywords: {
+                fr: ['prix', 'coût', 'payant', 'gratuit', 'abonnement', 'payer', 'tarif', 'argent'],
+                en: ['price', 'cost', 'pay', 'free', 'subscription', 'payment', 'rates', 'money'],
+                es: ['precio', 'costo', 'pagar', 'gratis', 'suscripción', 'pago', 'tarifas', 'dinero'],
+                ar: ['سعر', 'تكلفة', 'دفع', 'مجاني', 'اشتراك', 'مال', 'رسوم'],
+                tr: ['fiyat', 'maliyet', 'öde', 'ücretsiz', 'abonelik', 'ödeme', 'ücret', 'para']
+            },
+            responses: {
+                fr: [
+                    "Cette application est **100% gratuite** ! 🎉\nVous pouvez traduire autant de texte, d'images et de fichiers Excel que vous le souhaitez sans aucun frais ni abonnement.",
+                    "Pas de carte de crédit requise. Notre outil de traduction Java AI est entièrement gratuit pour tous les utilisateurs."
+                ],
+                en: [
+                    "This application is **100% free**! 🎉\nYou can translate as much text, images, and Excel files as you want without any fees or subscription.",
+                    "No credit card required. Our Java AI translation tool is completely free for all users."
+                ],
+                es: [
+                    "¡Esta aplicación es **100% gratuita**! 🎉\nPuedes traducir tanto texto, imágenes y archivos Excel como desees sin tarifas ni suscripciones.",
+                    "No se requiere tarjeta de crédito. Nuestra herramienta es completamente gratuita."
+                ],
+                ar: [
+                    "هذا التطبيق **مجاني 100٪**! 🎉\nيمكنك ترجمة القدر الذي تريده من النصوص والصور وملفات Excel دون أي رسوم أو اشتراك.",
+                    "لا حاجة لبطاقة ائتمان. أداة ترجمة Java AI الخاصة بنا مجانية تمامًا لجميع المستخدمين."
+                ],
+                tr: [
+                    "Bu uygulama **%100 ücretsizdir**! 🎉\nİstediğiniz kadar metin, resim ve Excel dosyasını ücret veya abonelik olmadan çevirebilirsiniz.",
+                    "Kredi kartı gerekmez. Java AI çeviri aracımız tüm kullanıcılar için tamamen ücretsizdir."
+                ]
+            }
+        },
+        limits: {
+            priority: 4,
+            keywords: {
+                fr: ['limite', 'maximum', 'taille', 'caractères', 'longueur', 'gros fichier', 'lourd'],
+                en: ['limit', 'maximum', 'size', 'characters', 'length', 'big file', 'large'],
+                es: ['límite', 'máximo', 'tamaño', 'caracteres', 'longitud', 'archivo grande', 'pesado'],
+                ar: ['حد', 'أقصى', 'حجم', 'أحرف', 'طول', 'ملف كبير', 'ثقيل'],
+                tr: ['sınır', 'maksimum', 'boyut', 'karakter', 'uzunluk', 'büyük dosya', 'ağır']
+            },
+            responses: {
+                fr: [
+                    "**Limites actuelles :**\n• Texte : 5000 caractères par traduction.\n• Fichiers (Excel/Word) : Jusqu'à 10 Mo environ.\n• Images : Formats standards (JPG, PNG).\n\nSi vous avez un texte plus long, essayez de le traduire par morceaux !",
+                    "Pour garantir la rapidité, nous limitons le texte à 5000 caractères. Pour les fichiers Excel volumineux, le traitement peut prendre quelques secondes de plus."
+                ],
+                en: [
+                    "**Current limits:**\n• Text: 5000 characters per translation.\n• Files (Excel/Word): Up to about 10 MB.\n• Images: Standard formats (JPG, PNG).\n\nIf you have longer text, try translating it in chunks!",
+                    "To ensure speed, we limit text to 5000 characters. For large Excel files, processing might take a few extra seconds."
+                ],
+                es: [
+                    "**Límites actuales:**\n• Texto: 5000 caracteres por traducción.\n• Archivos (Excel/Word): Hasta unos 10 MB.\n• Imágenes: Formatos estándar (JPG, PNG).\n\n¡Si tienes un texto más largo, intenta traducirlo por partes!",
+                    "Para garantizar la velocidad, limitamos el texto a 5000 caracteres."
+                ],
+                ar: [
+                    "**الحدود الحالية:**\n• النص: 5000 حرف لكل ترجمة.\n• الملفات (Excel/Word): ما يصل إلى حوالي 10 ميجابايت.\n• الصور: التنسيقات القياسية (JPG ، PNG).\n\nإذا كان لديك نص أطول ، فحاول ترجمته على أجزاء!",
+                    "لضمان السرعة ، نحدد النص بـ 5000 حرف. بالنسبة لملفات Excel الكبيرة ، قد تستغرق المعالجة بضع ثوانٍ إضافية."
+                ],
+                tr: [
+                    "**Mevcut sınırlar:**\n• Metin: Çeviri başına 5000 karakter.\n• Dosyalar (Excel/Word): Yaklaşık 10 MB'a kadar.\n• Resimler: Standart formatlar (JPG, PNG).\n\nDaha uzun metniniz varsa, parçalar halinde çevirmeyi deneyin!",
+                    "Hızı garanti etmek için metni 5000 karakterle sınırlandırıyoruz."
+                ]
+            }
+        },
+        default: {
+            priority: 0,
+            responses: {
+                fr: [
+                    "Je suis spécialisé dans l'aide à la traduction. Pourriez-vous reformuler votre question en rapport avec les langues, la traduction de texte, d'images ou de documents ?",
+                    "En tant qu'assistant de traduction, je peux vous aider avec :\n• La traduction de texte\n• L'extraction de texte d'images\n• La traduction de documents\n• L'utilisation des fonctionnalités audio\n\nQue souhaitez-vous savoir ?",
+                    "Je comprends votre question, mais je suis optimisé pour les sujets de traduction. Essayez de me demander quelque chose sur les langues, la traduction ou les fonctionnalités de notre application !"
+                ],
+                en: [
+                    "I specialize in translation assistance. Could you rephrase your question in relation to languages, text translation, images, or documents?",
+                    "As a translation assistant, I can help you with:\n• Text translation\n• Text extraction from images\n• Document translation\n• Using audio features\n\nWhat would you like to know?",
+                    "I understand your question, but I'm optimized for translation topics. Try asking me something about languages, translation, or our app's features!"
+                ],
+                es: [
+                    "Me especializo en asistencia de traducción. ¿Podría reformular su pregunta en relación con idiomas, traducción de texto, imágenes o documentos?",
+                    "Como asistente de traducción, puedo ayudarte con:\n• Traducción de texto\n• Extracción de texto de imágenes\n• Traducción de documentos\n• Uso de funciones de audio\n\n¿Qué te gustaría saber?",
+                    "Entiendo tu pregunta, pero estoy optimizado para temas de traducción. ¡Intenta preguntarme algo sobre idiomas, traducción o las características de nuestra aplicación!"
+                ],
+                ar: [
+                    "أتخصص في مساعدة الترجمة. هل يمكنك إعادة صياغة سؤالك فيما يتعلق باللغات أو ترجمة النصوص أو الصور أو المستندات؟",
+                    "كمساعد ترجمة، يمكنني مساعدتك في:\n• ترجمة النص\n• استخراج النص من الصور\n• ترجمة المستندات\n• استخدام ميزات الصوت\n\nماذا تريد أن تفعل؟",
+                    "أفهم سؤالك، لكنني محسن لمواضيع الترجمة. حاول أن تسألني شيئًا عن اللغات أو الترجمة أو ميزات تطبيقنا!"
+                ],
+                tr: [
+                    "Çeviri yardımında uzmanlaştım. Sorunuzu diller, metin çevirisi, görüntüler veya belgelerle ilgili olarak yeniden ifade edebilir misiniz?",
+                    "Bir çeviri asistanı olarak size şu konularda yardımcı olabilirim:\n• Metin çevirisi\n• Görüntülerden metin çıkarma\n• Belge çevirisi\n• Ses özelliklerini kullanma\n\nNe bilmek istiyorsunuz?",
+                    "Sorunuzu anlıyorum, ancak çeviri konuları için optimize edildim. Bana diller, çeviri veya uygulamamızın özellikleri hakkında bir şeyler sorun!"
+                ]
+            }
+        }
+    };;
+
+    function getIntelligentResponse(message, lang) {
+        const lowerMessage = message.toLowerCase();
+        
+        const foundCategories = [];
+        
+        for (const category in knowledgeBase) {
+            if (category === 'default') continue;
+            
+            const keywords = knowledgeBase[category].keywords[lang];
+            if (keywords) {
+                for (const keyword of keywords) {
+                    const regex = new RegExp(`\\b${keyword.replace(/\\b/g, '')}\\b`, 'i');
+                    if (regex.test(lowerMessage)) {
+                        foundCategories.push({
+                            category: category,
+                            priority: knowledgeBase[category].priority,
+                            keyword: keyword
+                        });
+                        break;
+                    }
+                }
+            }
+        }
+        
+        foundCategories.sort((a, b) => b.priority - a.priority);
+        
+        if (foundCategories.length > 0) {
+            const bestCategory = foundCategories[0].category;
+            const responses = knowledgeBase[bestCategory].responses[lang];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+        
+        const defaultResponses = knowledgeBase.default.responses[lang];
+        return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    }
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        addMessageToChat(message, 'user');
+        input.value = '';
+        
+        setTimeout(() => {
+            const response = getIntelligentResponse(message, currentChatLanguage);
+            addMessageToChat(response, 'bot');
+            
+            chatHistory.push({ role: "user", content: message });
+            chatHistory.push({ role: "assistant", content: response });
+            
+            if (chatHistory.length > 20) {
+                chatHistory = chatHistory.slice(-20);
+            }
+        }, 500);
+    }
+
+    function addMessageToChat(text, sender) {
+        const chatMessagesContainer = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        const id = 'msg-' + Date.now();
+        messageDiv.id = id;
+        messageDiv.className = `message ${sender}`;
+        
+        // --- AJOUT : Appliquer la classe RTL si la langue actuelle est l'arabe ---
+        if (currentChatLanguage === 'ar') {
+            messageDiv.classList.add('rtl-arabic');
+        }
+        // -----------------------------------------------------------------------
+        
+        const formattedText = text.replace(/\n/g, '<br>');
+        messageDiv.innerHTML = formattedText;
+        
+        chatMessagesContainer.appendChild(messageDiv);
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        return id;
+    }
+
+    function clearChat() {
+        if (confirm("Voulez-vous vraiment effacer la conversation ?")) {
+            document.getElementById('chatMessages').innerHTML = '';
+            chatHistory = [];
+            addWelcomeMessage();
+        }
+    }
+
+    document.getElementById('sourceLang').addEventListener('change', updateLangLabels);
+    document.getElementById('targetLang').addEventListener('change', updateLangLabels);
+    
+    function updateLangLabels() {
+        const sourceSelect = document.getElementById('sourceLang');
+        const targetSelect = document.getElementById('targetLang');
+        const sourceLang = sourceSelect.options[sourceSelect.selectedIndex].text;
+        const targetLang = targetSelect.options[targetSelect.selectedIndex].text;
+        
+        document.getElementById('sourceLangLabel').textContent = sourceLang === 'Détecter la langue' ? 'Détection automatique' : sourceLang;
+        document.getElementById('targetLangLabel').textContent = targetLang;
+
+        updateDetectedLangDisplay();
+        applyRTLStyles();
+    }
+    
+    function updateDetectedLangDisplay() {
+        const detectedLabel = document.getElementById('detectedLangLabel');
+        const sourceLang = document.getElementById('sourceLang').value;
+        
+        if (sourceLang === 'auto' && globalDetectedLang && detectedLangNames[globalDetectedLang]) {
+            detectedLabel.textContent = `(détecté: ${detectedLangNames[globalDetectedLang]})`;
+        } else {
+            detectedLabel.textContent = '';
+        }
+    }
+    
+    updateLangLabels();
+    
+    document.getElementById('swapLangs').addEventListener('click', function() {
+        const sourceLang = document.getElementById('sourceLang');
+        const targetLang = document.getElementById('targetLang');
+        const sourceValue = sourceLang.value;
+        const targetValue = targetLang.value;
+        
+        if (sourceValue === 'auto') {
+            alert("Impossible d'échanger les langues lorsque 'Détecter la langue' est sélectionné");
+            return;
+        }
+        
+        sourceLang.value = targetValue;
+        targetLang.value = sourceValue;
+        
+        const inputText = document.getElementById('inputText').value;
+        const outputText = document.getElementById('outputText').value;
+        
+        if (inputText.trim() && outputText.trim()) {
+            document.getElementById('inputText').value = outputText;
+            document.getElementById('outputText').value = inputText;
+        }
+        
+        updateLangLabels();
+        translateText();
+    });
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById('textTab').style.display = tabId === 'text' ? 'block' : 'none';
+            document.getElementById('chatbotTab').style.display = tabId === 'chatbot' ? 'block' : 'none';
+            
+            if (tabId !== 'text') {
+                clearImage();
+            }
+            
+            if (tabId === 'chatbot') {
+                setTimeout(() => {
+                    document.getElementById('chatInput').focus();
+                    if (document.getElementById('chatMessages').children.length === 0) {
+                        addWelcomeMessage();
+                    }
+                }, 100);
+            }
+        });
+    });
+    
+    document.getElementById('historyBtn').addEventListener('click', toggleHistory);
+    
+    function toggleHistory() {
+        const sidebar = document.getElementById('historySidebar');
+        sidebar.classList.toggle('active');
+        
+        if (sidebar.classList.contains('active')) {
+            loadHistory();
+        }
+    }
+    
+    document.querySelectorAll('.history-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.history-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            currentHistoryTab = this.getAttribute('data-history-tab');
+            loadHistory();
+        });
+    });
+    
+    function loadHistory() {
+        const historyList = document.getElementById('historyList');
+        historyList.innerHTML = '';
+        
+        const filteredHistory = history.filter(item => {
+            if (currentHistoryTab === 'all') return true;
+            return item.type === currentHistoryTab;
+        });
+        
+        if (filteredHistory.length === 0) {
+            historyList.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                    <i class="fas fa-history fa-2x" style="margin-bottom: 16px;"></i>
+                    <p>Aucun élément dans l'historique</p>
+                </div>
+            `;
+            return;
+        }
+        
+        filteredHistory.forEach((item, index) => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.onclick = () => loadHistoryItem(item);
+            
+            let content = '';
+            if (item.type === 'text') {
+                content = `
+                    <div class="history-item-header">
+                        <span class="history-type">Texte</span>
+                        <span class="history-date">${formatDate(item.timestamp)}</span>
+                    </div>
+                    <div class="history-text" title="${item.data.inputText}">${item.data.inputText.substring(0, 100)}${item.data.inputText.length > 100 ? '...' : ''}</div>
+                    <div class="history-langs">${item.sourceLang} → ${item.targetLang}</div>
+                `;
+            } else if (item.type === 'images') {
+                content = `
+                    <div class="history-item-header">
+                        <span class="history-type">Image</span>
+                        <span class="history-date">${formatDate(item.timestamp)}</span>
+                    </div>
+                    <div class="history-file-name">${item.data.fileName}</div>
+                    <div class="history-langs">${item.sourceLang} → ${item.targetLang}</div>
+                `;
+            } else if (item.type === 'documents') {
+                content = `
+                    <div class="history-item-header">
+                        <span class="history-type">Document</span>
+                        <span class="history-date">${formatDate(item.timestamp)}</span>
+                    </div>
+                    <div class="history-file-name">${item.data.fileName}</div>
+                    <div class="history-langs">${item.sourceLang} → ${item.targetLang}</div>
+                `;
+            }
+            
+            historyItem.innerHTML = content;
+            historyList.appendChild(historyItem);
+        });
+    }
+    
+    function formatDate(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 60) {
+            return `Il y a ${diffMins} min`;
+        } else if (diffHours < 24) {
+            return `Il y a ${diffHours} h`;
+        } else if (diffDays < 7) {
+            return `Il y a ${diffDays} j`;
+        } else {
+            return date.toLocaleDateString('fr-FR');
+        }
+    }
+    
+    function loadHistoryItem(item) {
+        if (item.type === 'text') {
+            document.getElementById('inputText').value = item.data.inputText;
+            document.getElementById('outputText').value = item.data.outputText;
+            document.getElementById('sourceLang').value = item.sourceLang;
+            document.getElementById('targetLang').value = item.targetLang;
+            if (item.sourceLang && item.sourceLang !== 'auto') {
+                globalDetectedLang = item.sourceLang;
+            }
+            updateLangLabels();
+            updateCharCount();
+            clearImage();
+        } else if (item.type === 'images') {
+            document.getElementById('inputText').value = item.data.inputText || '';
+            document.getElementById('outputText').value = item.data.outputText || '';
+            document.getElementById('sourceLang').value = item.sourceLang;
+            document.getElementById('targetLang').value = item.targetLang;
+            if (item.sourceLang && item.sourceLang !== 'auto') {
+                globalDetectedLang = item.sourceLang;
+            }
+            updateLangLabels();
+            updateCharCount();
+            clearImage();
+        } else if (item.type === 'documents') {
+            document.getElementById('sourceLang').value = item.sourceLang;
+            document.getElementById('targetLang').value = item.targetLang;
+            if (item.sourceLang && item.sourceLang !== 'auto') {
+                globalDetectedLang = item.sourceLang;
+            }
+            updateLangLabels();
+            alert("Le document ne peut pas être rechargé, mais les paramètres de langue ont été mis à jour.");
+            clearImage();
+        }
+        toggleHistory();
+    }
+    
+    function clearHistory() {
+        if (confirm("Voulez-vous vraiment effacer tout l'historique ?")) {
+            history = [];
+            localStorage.setItem('translationHistory', JSON.stringify(history));
+            loadHistory();
+        }
+    }
+    
+    function addToHistory(type, sourceLang, targetLang, data) {
+        const historyItem = {
+            id: Date.now(),
+            type: type,
+            sourceLang: sourceLang,
+            targetLang: targetLang,
+            timestamp: Date.now(),
+            data: data
+        };
+        
+        history.unshift(historyItem);
+        if (history.length > 50) {
+            history = history.slice(0, 50);
+        }
+        
+        localStorage.setItem('translationHistory', JSON.stringify(history));
+    }
+    
+    document.getElementById('inputText').addEventListener('input', updateCharCount);
+    
+    function updateCharCount() {
+        const text = document.getElementById('inputText').value;
+        const charCount = text.length;
+        document.getElementById('charCount').textContent = `${charCount}/5000`;
+        
+        if (charCount > 5000) {
+            document.getElementById('inputText').style.color = 'red';
+        } else {
+            document.getElementById('inputText').style.color = '';
+        }
+    }
+    
+    let timeout = null;
+    const inputText = document.getElementById('inputText');
+    inputText.addEventListener('keyup', () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => { translateText(); }, 800);
+    });
+
+async function translateText() {
+    const text = document.getElementById('inputText').value;
+    const source = document.getElementById('sourceLang').value;
+    const target = document.getElementById('targetLang').value;
+    
+    if(text.trim() === "") return;
+
+    try {
+        // Envoyer le texte avec les sauts de ligne préservés
+        const response = await fetch('/api/translate-text', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                text: text, 
+                sourceLang: source, 
+                targetLang: target,
+                preserveFormatting: true // Ajouter ce paramètre si l'API le supporte
+            })
+        });
+        
+        const data = await response.json();
+        
+        // Remplacer les marqueurs de paragraphe par des sauts de ligne si nécessaire
+        let translatedText = data.translatedText;
+        
+        // Si l'API ne préserve pas automatiquement la mise en forme,
+        // nous traitons les retours à la ligne
+        if (translatedText) {
+            // Option 1: Si l'API renvoie des marqueurs spécifiques
+            translatedText = translatedText.replace(/\\n/g, '\n');
+            translatedText = translatedText.replace(/<br\/?>/g, '\n');
+            translatedText = translatedText.replace(/\\r\\n/g, '\n');
+            
+            // Option 2: Conserver les sauts de ligne originaux en traduisant par paragraphe
+            // (décommentez cette section si l'API ne conserve pas la mise en forme)
+            
+            if (text.includes('\n')) {
+                const paragraphs = text.split('\n');
+                const translatedParagraphs = [];
+                
+                for (const paragraph of paragraphs) {
+                    if (paragraph.trim() === '') {
+                        translatedParagraphs.push('');
+                        continue;
+                    }
+                    
+                    const paraResponse = await fetch('/api/translate-text', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ 
+                            text: paragraph, 
+                            sourceLang: source, 
+                            targetLang: target 
+                        })
+                    });
+                    const paraData = await paraResponse.json();
+                    translatedParagraphs.push(paraData.translatedText);
+                }
+                
+                translatedText = translatedParagraphs.join('\n');
+            }
+            
+        }
+        
+        document.getElementById('outputText').value = translatedText;
+
+        // Traductions forcées pour les mots spécifiques
+        if (text.trim().toLowerCase() === 'bonjour' && target !== 'fr') {
+            const forcedMap = { en: 'hello', es: 'hola', ar: 'مرحبا', tr: 'merhaba' };
+            document.getElementById('outputText').value = forcedMap[target] || data.translatedText;
+        }
+        if (text.trim().toLowerCase() === 'gracias' && target !== 'es') {
+            const forcedMap = { fr: 'merci', en: 'thank you', ar: 'شكرا', tr: 'teşekkürler' };
+            document.getElementById('outputText').value = forcedMap[target] || data.translatedText;
+        }
+        
+        document.getElementById('translatedCharCount').textContent = 
+            `${document.getElementById('outputText').value.length} caractères`;
+
+        const detectedCode = data.detectedSourceLang || data.detectedSourceText;
+        
+        if (detectedCode) {
+            globalDetectedLang = detectedCode;
+            if (typeof updateDetectedLangDisplay === 'function') {
+                updateDetectedLangDisplay();
+            }
+        }
+
+        // Appliquer les styles RTL après la traduction
+        applyRTLStyles();
+
+        if (text.trim() && document.getElementById('outputText').value.trim()) {
+            addToHistory('text', source === 'auto' ? globalDetectedLang : source, target, {
+                inputText: text,
+                outputText: document.getElementById('outputText').value
+            });
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+    
+    function startDictation() {
+        if (window.hasOwnProperty('webkitSpeechRecognition')) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            const selectedLang = document.getElementById('sourceLang').value;
+            
+            const speechLangMap = {
+                'fr': 'fr-FR',
+                'en': 'en-US',
+                'es': 'es-ES',
+                'ar': 'ar-SA',
+                'tr': 'tr-TR',
+                'auto': 'fr-FR'
+            };
+            
+            if (selectedLang === 'auto') {
+                recognition.lang = globalDetectedLang ? 
+                    speechLangMap[globalDetectedLang] || 'fr-FR' : 'fr-FR';
+            } else {
+                recognition.lang = speechLangMap[selectedLang] || 'fr-FR';
+            }
+            
+            recognition.start();
+            recognition.onresult = function(e) {
+                document.getElementById('inputText').value = e.results[0][0].transcript;
+                translateText();
+                updateCharCount();
+            };
+            
+            recognition.onerror = function(e) {
+                console.error("Erreur reconnaissance vocale:", e.error);
+            };
+        } else {
+            alert("Pas de micro supporté");
+        }
+    }
+    
+    let currentAudio = new Audio();
+    let isPlaying = false;
+    
+    function readText(elementId) {
+    if (isPlaying) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        isPlaying = false;
+        return;
+    }
+    
+    const text = document.getElementById(elementId).value;
+    
+    if (text.trim().toLowerCase() === 'bonjour') { playChunks(['bonjour'], 'fr', 0); return; }
+    if (text.trim().toLowerCase() === 'gracias') { playChunks(['gracias'], 'es', 0); return; }
+
+    if (!text || text.trim() === "") return;
+
+    let lang;
+    if (elementId === 'inputText') {
+        const selectedLang = document.getElementById('sourceLang').value;
+        
+        if (selectedLang === 'auto') {
+            lang = globalDetectedLang ? globalDetectedLang : 'fr';
+        } else {
+            lang = selectedLang;
+        }
+    } else {
+        lang = document.getElementById('targetLang').value;
+    }
+
+    let cleanLang = String(lang).toLowerCase().substring(0, 2);
+
+    const ttsLangMap = {
+        'fr': 'fr',
+        'en': 'en',
+        'es': 'es',
+        'ar': 'ar',
+        'tr': 'tr'
+    };
+    
+    const ttsLang = ttsLangMap[cleanLang] || 'en';
+    
+    const chunks = splitTextIntoChunks(text, 180);
+    playChunks(chunks, ttsLang, 0);
+}
+
+    function playChunks(chunks, lang, index) {
+        if (index >= chunks.length) { isPlaying = false; return; }
+        isPlaying = true;
+
+        const encodedText = encodeURIComponent(chunks[index]);
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=gtx&tl=${lang}&q=${encodedText}`;
+
+        currentAudio.src = url;
+        currentAudio.playbackRate = 1;
+        currentAudio.play().catch(e => { console.error("Erreur audio", e); isPlaying = false; });
+        currentAudio.onended = function() { playChunks(chunks, lang, index + 1); };
+    }
+
+    function splitTextIntoChunks(text, maxLength) {
+        const sentences = text.match(/[^.?!]+[.?!]+|[^.?!]+$/g) || [text];
+        const chunks = [];
+        let currentChunk = "";
+        sentences.forEach(sentence => {
+            if (sentence.length > maxLength) {
+                const words = sentence.split(' ');
+                words.forEach(word => {
+                    if ((currentChunk + word).length < maxLength) currentChunk += word + " ";
+                    else { chunks.push(currentChunk.trim()); currentChunk = word + " "; }
+                });
+            } else {
+                if ((currentChunk + sentence).length < maxLength) currentChunk += sentence + " ";
+                else { chunks.push(currentChunk.trim()); currentChunk = sentence + " "; }
+            }
+        });
+        if (currentChunk.trim().length > 0) chunks.push(currentChunk.trim());
+        return chunks;
+    }
+
+    async function uploadFile() {
+        const fileInput = document.getElementById('fileUpload');
+        if(fileInput.files.length === 0) return;
+        
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        formData.append("sourceLang", document.getElementById('sourceLang').value);
+        formData.append("targetLang", document.getElementById('targetLang').value);
+
+        const response = await fetch('/api/translate-file', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            const header = response.headers.get('Content-Disposition');
+            let filename = 'traduction.txt';
+            if (header && header.indexOf('filename=') !== -1) {
+                filename = header.split('filename=')[1].replace(/"/g, '');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.getElementById('downloadLink');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            
+            addToHistory('documents', 
+                document.getElementById('sourceLang').value, 
+                document.getElementById('targetLang').value, 
+                { fileName: fileInput.files[0].name }
+            );
+            
+            alert("Fichier traduit téléchargé !");
+        } else {
+            alert("Erreur lors de la traduction.");
+        }
+
+        // --- AJOUT IMPORTANT ICI : Réinitialiser l'input pour permettre un nouvel envoi ---
+        fileInput.value = ''
+    }
+
+    async function uploadImage() {
+        const fileInput = document.getElementById('imgUpload');
+        if(fileInput.files.length === 0) return;
+        
+        const imageContainer = document.getElementById('imageContainer');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const noImageText = document.getElementById('noImageText');
+        const imageText = document.getElementById('imageText');
+        const inputTextarea = document.getElementById('inputText');
+        
+        const imageUrl = URL.createObjectURL(fileInput.files[0]);
+        uploadedImage.src = imageUrl;
+        
+        noImageText.style.display = 'none';
+        uploadedImage.style.display = 'block';
+        
+        imageContainer.classList.add('active');
+        inputTextarea.style.display = 'none';
+        
+        imageText.style.display = 'none'; 
+        
+        const formData = new FormData();
+        formData.append("image", fileInput.files[0]);
+        formData.append("sourceLang", document.getElementById('sourceLang').value);
+        formData.append("targetLang", document.getElementById('targetLang').value);
+        
+        const response = await fetch('/api/translate-image', { method: 'POST', body: formData });
+        const data = await response.json();
+
+        inputTextarea.value = data.detectedSourceText || "";
+        document.getElementById('outputText').value = data.translatedText || "";
+        updateCharCount();
+
+        if (data.detectedSourceLang) {
+            globalDetectedLang = data.detectedSourceLang;
+            updateDetectedLangDisplay();
+        }
+        
+        // Appliquer les styles RTL pour l'image
+        applyRTLStyles();
+        
+        if (data.detectedSourceText && data.translatedText) {
+            addToHistory('images', 
+                data.detectedSourceLang || document.getElementById('sourceLang').value, 
+                document.getElementById('targetLang').value, 
+                { 
+                    fileName: fileInput.files[0].name,
+                    inputText: data.detectedSourceText,
+                    outputText: data.translatedText
+                }
+            );
+        }
+    }
+
+    function copyToClipboard() {
+        const output = document.getElementById('outputText');
+        output.select();
+        document.execCommand('copy');
+        
+        const copyBtn = document.querySelector('[onclick="copyToClipboard()"]');
+        const originalIcon = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+        copyBtn.style.color = 'green';
+        
+        setTimeout(() => {
+            copyBtn.innerHTML = originalIcon;
+            copyBtn.style.color = '';
+        }, 1000);
+    }
+    
+    updateCharCount();
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        updateChatbotLanguage();
+        addWelcomeMessage();
+        // Appliquer les styles RTL au chargement initial
+        applyRTLStyles();
+    });
+</script>
+</body>
+</html>
