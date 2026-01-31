@@ -1,7 +1,6 @@
-# Utilise une image de base Java 17
 FROM eclipse-temurin:17-jdk-focal
 
-# 1. Installation de Tesseract, des langues ET de MAVEN (La correction est ici)
+# 1. Installation des dépendances (Maven + Tesseract)
 RUN apt-get update && \
     apt-get install -y \
     maven \
@@ -13,16 +12,17 @@ RUN apt-get update && \
     tesseract-ocr-eng && \
     apt-get clean
 
-# 2. Variable Tesseract
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/tessdata
 
-# Préparation du dossier
 WORKDIR /app
 COPY . .
 
-# 3. Construction avec le Maven installé dans Docker (et plus via mvnw)
-# On utilise "mvn" directement au lieu de "./mvnw"
+# 2. Construction du projet
 RUN mvn clean package -DskipTests
 
+# 3. ASTUCE : On renomme le fichier généré en "app.jar" pour être sûr du nom
+RUN mv target/*.jar app.jar
+
 # 4. Lancement
-CMD ["java", "-Dserver.port=8081", "-Xmx350m", "-jar", "target/traducteur-0.0.1-SNAPSHOT.jar"]
+# On force le port 8081 ici pour être sûr que ça matche avec Koyeb
+CMD ["java", "-Dserver.port=8081", "-Xmx350m", "-jar", "app.jar"]
