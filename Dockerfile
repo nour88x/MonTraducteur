@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jdk-focal
 
-# 1. Installation des dépendances (Maven + Tesseract)
+# 1. Installation des dépendances
 RUN apt-get update && \
     apt-get install -y \
     maven \
@@ -20,9 +20,11 @@ COPY . .
 # 2. Construction du projet
 RUN mvn clean package -DskipTests
 
-# 3. ASTUCE : On renomme le fichier généré en "app.jar" pour être sûr du nom
-RUN mv target/*.jar app.jar
+# 3. Renommage sécurisé (prend le plus gros fichier jar trouvé)
+# Cela évite les erreurs si le nom change
+RUN find target -name "*.jar" -type f -size +1M -exec cp {} app.jar \;
 
-# 4. Lancement
-# On force le port 8081 ici pour être sûr que ça matche avec Koyeb
-CMD ["java", "-Dserver.port=8081", "-Xmx350m", "-jar", "app.jar"]
+# 4. Lancement OPTIMISÉ MÉMOIRE
+# -Xmx256m : On limite Java à 256Mo pour ne pas faire exploser le conteneur de 512Mo
+# -Dserver.port=8081 : On force le port 8081
+CMD ["java", "-Dserver.port=8081", "-Xmx256m", "-jar", "app.jar"]
