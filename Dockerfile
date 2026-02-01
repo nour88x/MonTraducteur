@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jdk-focal
 
-# 1. Installation des dépendances (Tesseract)
+# 1. Installation des dépendances
 RUN apt-get update && \
     apt-get install -y \
     maven \
@@ -12,22 +12,22 @@ RUN apt-get update && \
     tesseract-ocr-eng && \
     apt-get clean
 
-# 2. Configuration dossier Tesseract
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/tessdata
 
-# 3. Création d'un utilisateur spécial (Obligatoire pour Hugging Face)
+# 2. Création utilisateur (OBLIGATOIRE POUR HUGGING FACE)
 RUN useradd -m -u 1000 user
 WORKDIR /app
 
-# 4. Copie des fichiers
+# 3. Copie des fichiers
 COPY --chown=user . .
 
-# 5. Construction du projet
-# On force le nom "app" pour ne pas avoir d'erreur "jarfile not found"
+# 4. Construction (Force le nom 'app.jar')
 RUN mvn clean package -DskipTests -DfinalName=app
 
-# 6. On passe sur l'utilisateur sécurisé
+# 5. Permission et Port 7860 (TRES IMPORTANT)
 USER user
+ENV PORT=7860
+EXPOSE 7860
 
-# 7. Lancement sur le port 7860 (OBLIGATOIRE CHEZ HUGGING FACE)
+# 6. Lancement sur le port 7860
 CMD ["java", "-Dserver.port=7860", "-Xmx1024m", "-jar", "target/app.jar"]
