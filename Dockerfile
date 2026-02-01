@@ -20,11 +20,13 @@ COPY . .
 # 2. Construction du projet
 RUN mvn clean package -DskipTests
 
-# 3. Renommage sécurisé (prend le plus gros fichier jar trouvé)
-# Cela évite les erreurs si le nom change
-RUN find target -name "*.jar" -type f -size +1M -exec cp {} app.jar \;
+# 3. DEBUG ET COPIE (La partie corrigée)
+# On affiche la liste des fichiers pour être sûr (apparaîtra dans les logs de build)
+RUN ls -l target/
 
-# 4. Lancement OPTIMISÉ MÉMOIRE
-# -Xmx256m : On limite Java à 256Mo pour ne pas faire exploser le conteneur de 512Mo
-# -Dserver.port=8081 : On force le port 8081
+# On copie le fichier EXACT (basé sur ton pom.xml)
+# Si cette ligne échoue, c'est que le fichier n'a pas été créé
+RUN cp target/traducteur-0.0.1-SNAPSHOT.jar app.jar
+
+# 4. Lancement
 CMD ["java", "-Dserver.port=8081", "-Xmx256m", "-jar", "app.jar"]
