@@ -1385,30 +1385,49 @@ const knowledgeBase = {
         // --- NOUVELLES CATÉGORIES "COMMENT FAIRE..." (Priorité 8 - Très haute) ---
         // Cette section répond spécifiquement quand l'utilisateur demande "Comment..." + l'option
         
+// --- PROCÉDURES SPÉCIFIQUES ET INTELLIGENTES (Priorité 8) ---
+        
         procedure_image: {
             priority: 8,
             keywords: {
-                fr: ['comment image', 'comment faire image', 'procédure image', 'tuto image', 'comment photo', 'comment ocr'],
-                en: ['how to image', 'how to photo', 'image procedure', 'steps for image', 'how to ocr'],
-                es: ['cómo imagen', 'cómo foto', 'procedimiento imagen', 'pasos imagen'],
-                ar: ['كيف صورة', 'كيفية صورة', 'إجراءات صورة', 'خطوات صورة'],
-                tr: ['nasıl görüntü', 'nasıl fotoğraf', 'görüntü prosedürü', 'fotoğraf adımları']
+                fr: [
+                    'comment traduire une image', 'comment traduire du texte depuis une image', 'procédure image', 'tuto image', 
+                    'comment utiliser photo', 'mode d\'emploi ocr', 'comment ça marche image', 
+                    'guide photo', 'étapes image', 'traduire une capture'
+                ],
+                en: [
+                    'how to translate an image', 'how to use photo', 'image procedure', 'steps for image', 
+                    'how to ocr', 'image guide', 'photo tutorial', 'how does image work', 
+                    'translate screenshot', 'using camera'
+                ],
+                es: [
+                    'cómo traducir imagen', 'cómo funciona foto', 'procedimiento imagen', 'pasos imagen', 
+                    'guía ocr', 'tutorial foto', 'cómo usar cámara', 'traducir captura'
+                ],
+                ar: [
+                    'كيف تترجم صورة', 'كيفية استخدام الصور', 'إجراءات صورة', 'خطوات صورة', 
+                    'دليل الصور', 'شرح ocr', 'كيف تعمل الكاميرا', 'ترجمة لقطة شاشة'
+                ],
+                tr: [
+                    'görüntü nasıl çevrilir', 'fotoğraf nasıl kullanılır', 'görüntü prosedürü', 'fotoğraf adımları', 
+                    'ocr kılavuzu', 'resim çeviri nasıl', 'ekran görüntüsü çevir'
+                ]
             },
             responses: {
                 fr: [
-                    "📸 **Procédure pour les images :**\n1. Allez dans l'onglet **Texte**.\n2. Cliquez sur l'icône **Importer** (🖼️) en bas.\n3. Choisissez votre image.\n4. L'IA extrait et traduit le texte automatiquement !"
+                    "📸 **Mode d'emploi - Traduction d'Image (OCR)** :\n\n1. Restez dans l'onglet **Texte**.\n2. Cliquez sur le bouton **Importer** (icône 🖼️) situé sous la zone de texte.\n3. Sélectionnez votre image (JPG, PNG).\n4. Patientez quelques secondes : le texte sera extrait et traduit automatiquement à l'écran !"
                 ],
                 en: [
-                    "📸 **Procedure for images:**\n1. Go to the **Text** tab.\n2. Click the **Import** icon (🖼️) at the bottom.\n3. Choose your image.\n4. AI extracts and translates text automatically!"
+                    "📸 **User Guide - Image Translation (OCR)**:\n\n1. Stay in the **Text** tab.\n2. Click the **Import** button (icon 🖼️) below the text area.\n3. Select your image (JPG, PNG).\n4. Wait a few seconds: text will be extracted and translated automatically on screen!"
                 ],
                 es: [
-                    "📸 **Procedimiento para imágenes:**\n1. Ve a la pestaña **Texto**.\n2. Haz clic en **Importar** (🖼️).\n3. Elige tu imagen.\n4. ¡La IA extrae y traduce el texto automáticamente!"
+                    "📸 **Guía de uso - Traducción de Imágenes**:\n\n1. Mantente en la pestaña **Texto**.\n2. Haz clic en el botón **Importar** (icono 🖼️) abajo.\n3. Selecciona tu imagen.\n4. Espera unos segundos: ¡el texto se extraerá y traducirá automáticamente!"
                 ],
                 ar: [
-                    "📸 **إجراءات الصور:**\n1. انتقل إلى علامة التبويب **نص**.\n2. انقر فوق رمز **استيراد** (🖼️) في الأسفل.\n3. اختر صورتك.\n4. يستخرج الذكاء الاصطناعي النص ويترجمه تلقائيًا!"
+                    "📸 **دليل المستخدم - ترجمة الصور (OCR)**:\n\n1. ابق في علامة التبويب **نص**.\n2. انقر على زر **استيراد** (أيقونة 🖼️) أسفل منطقة النص.\n3. اختر صورتك.\n4. انتظر بضع ثوانٍ: سيتم استخراج النص وترجمته تلقائيًا!"
                 ],
                 tr: [
-                    "📸 **Görüntüler için prosedür:**\n1. **Metin** sekmesine gidin.\n2. Alttaki **İçe Aktar** simgesine (🖼️) tıklayın.\n3. Resminizi seçin.\n4. AI metni çıkarır ve otomatik olarak çevirir!"
+                    "📸 **Kullanım Kılavuzu - Görüntü Çevirisi**:\n\n1. **Metin** sekmesinde kalın.\n2. Aşağıdaki **İçe Aktar** düğmesine (🖼️ simgesi) tıklayın.\n3. Resminizi seçin.\n4. Birkaç saniye bekleyin: metin çıkarılacak ve otomatik olarak çevrilecektir!"
                 ]
             }
         },
@@ -1416,27 +1435,44 @@ const knowledgeBase = {
         procedure_document: {
             priority: 8,
             keywords: {
-                fr: ['comment document', 'comment excel', 'comment word', 'comment fichier', 'procédure document', 'tuto excel'],
-                en: ['how to document', 'how to excel', 'how to word', 'how to file', 'document procedure'],
-                es: ['cómo documento', 'cómo excel', 'cómo archivo', 'procedimiento documento'],
-                ar: ['كيف مستند', 'كيف excel', 'كيف ملف', 'إجراءات مستند'],
-                tr: ['nasıl belge', 'nasıl excel', 'nasıl dosya', 'belge prosedürü']
+                fr: [
+                    'comment traduire un document', 'comment faire fichier', 'procédure document', 'tuto excel', 
+                    'comment utiliser word', 'mode d\'emploi fichier', 'comment ça marche document', 
+                    'guide pdf', 'étapes fichier', 'traduire un docx'
+                ],
+                en: [
+                    'how to translate a document', 'how to use file', 'document procedure', 'steps for excel', 
+                    'how to word', 'file guide', 'document tutorial', 'how does file work', 
+                    'translate docx', 'upload document'
+                ],
+                es: [
+                    'cómo traducir documento', 'cómo funciona archivo', 'procedimiento documento', 'pasos excel', 
+                    'guía word', 'tutorial archivo', 'cómo subir documento', 'traducir docx'
+                ],
+                ar: [
+                    'كيف تترجم مستند', 'كيفية استخدام الملفات', 'إجراءات مستند', 'خطوات excel', 
+                    'دليل word', 'شرح الملفات', 'كيف يعمل المستند', 'تحميل ملف'
+                ],
+                tr: [
+                    'belge nasıl çevrilir', 'dosya nasıl kullanılır', 'belge prosedürü', 'excel adımları', 
+                    'word kılavuzu', 'dosya çeviri nasıl', 'docx çevir'
+                ]
             },
             responses: {
                 fr: [
-                    "📄 **Procédure pour les documents (Excel/Word) :**\n1. Cliquez sur le bouton **Documents** (📄) sous la zone de texte.\n2. Sélectionnez votre fichier `.xlsx` ou `.docx`.\n3. La traduction démarre.\n4. Le fichier traduit se télécharge automatiquement."
+                    "📄 **Mode d'emploi - Traduction de Documents** :\n\n1. Repérez le bouton **Documents** (icône 📄) sous la zone de saisie.\n2. Cliquez dessus et choisissez votre fichier (`.docx` ou `.xlsx`).\n3. La traduction se lance immédiatement.\n4. Une fois terminée, le fichier traduit se **télécharge automatiquement** sur votre appareil."
                 ],
                 en: [
-                    "📄 **Procedure for documents (Excel/Word):**\n1. Click the **Documents** button (📄) below the text area.\n2. Select your `.xlsx` or `.docx` file.\n3. Translation starts.\n4. The translated file downloads automatically."
+                    "📄 **User Guide - Document Translation**:\n\n1. Locate the **Documents** button (icon 📄) below the input area.\n2. Click it and choose your file (`.docx` or `.xlsx`).\n3. Translation starts immediately.\n4. Once done, the translated file **downloads automatically** to your device."
                 ],
                 es: [
-                    "📄 **Procedimiento para documentos:**\n1. Haz clic en el botón **Documentos** (📄) abajo.\n2. Selecciona tu archivo.\n3. La traducción comienza.\n4. El archivo se descarga automáticamente."
+                    "📄 **Guía de uso - Documentos**:\n\n1. Busca el botón **Documentos** (icono 📄) abajo.\n2. Haz clic y elige tu archivo (`.docx` o `.xlsx`).\n3. La traducción comienza inmediatamente.\n4. Al finalizar, el archivo traducido se **descarga automáticamente**."
                 ],
                 ar: [
-                    "📄 **إجراءات المستندات (Excel/Word):**\n1. انقر فوق زر **المستندات** (📄) أسفل منطقة النص.\n2. حدد ملفك.\n3. تبدأ الترجمة.\n4. يتم تنزيل الملف تلقائيًا."
+                    "📄 **دليل المستخدم - ترجمة المستندات**:\n\n1. حدد موقع زر **المستندات** (أيقونة 📄) أسفل منطقة الإدخال.\n2. انقر عليه واختر ملفك (`.docx` أو `.xlsx`).\n3. تبدأ الترجمة فورًا.\n4. بمجرد الانتهاء، يتم **تنزيل الملف المترجم تلقائيًا**."
                 ],
                 tr: [
-                    "📄 **Belgeler için prosedür:**\n1. Metin alanının altındaki **Belgeler** (📄) düğmesine tıklayın.\n2. Dosyanızı seçin.\n3. Çeviri başlar.\n4. Dosya otomatik olarak indirilir."
+                    "📄 **Kullanım Kılavuzu - Belge Çevirisi**:\n\n1. Giriş alanının altındaki **Belgeler** düğmesini (📄 simgesi) bulun.\n2. Tıklayın ve dosyanızı seçin (`.docx` veya `.xlsx`).\n3. Çeviri hemen başlar.\n4. Bittiğinde, çevrilen dosya **otomatik olarak indirilir**."
                 ]
             }
         },
@@ -1444,27 +1480,42 @@ const knowledgeBase = {
         procedure_text: {
             priority: 8,
             keywords: {
-                fr: ['comment texte', 'comment traduire', 'comment écrire', 'procédure texte', 'tuto texte'],
-                en: ['how to text', 'how to translate', 'how to write', 'text procedure'],
-                es: ['cómo texto', 'cómo traducir', 'procedimiento texto'],
-                ar: ['كيف نص', 'كيف تترجم', 'إجراءات نص'],
-                tr: ['nasıl metin', 'nasıl çevrilir', 'metin prosedürü']
+                fr: [
+                    'comment traduire un texte', 'comment écrire', 'procédure texte', 'comment traduire du texte', 
+                    'comment utiliser texte', 'mode d\'emploi texte', 'guide écriture', 'étapes texte'
+                ],
+                en: [
+                    'how to translate a text', 'how to write', 'text procedure', 'translation steps', 
+                    'how to use text', 'text guide', 'writing tutorial', 'how to type'
+                ],
+                es: [
+                    'cómo traducir texto', 'cómo escribir', 'procedimiento texto', 'pasos traducción', 
+                    'guía texto', 'tutorial escritura', 'cómo teclear'
+                ],
+                ar: [
+                    'كيف تترجم نص', 'كيف تكتب', 'إجراءات النص', 'خطوات الترجمة', 
+                    'دليل النص', 'شرح الكتابة', 'كيفية الطباعة'
+                ],
+                tr: [
+                    'metin nasıl çevrilir', 'nasıl yazılır', 'metin prosedürü', 'çeviri adımları', 
+                    'metin kılavuzu', 'yazma eğitimi', 'nasıl girilir'
+                ]
             },
             responses: {
                 fr: [
-                    "✍️ **Procédure pour le texte :**\n1. Choisissez les langues en haut.\n2. Écrivez ou collez votre texte dans la case de gauche.\n3. La traduction apparaît instantanément à droite."
+                    "✍️ **Mode d'emploi - Traduction de Texte** :\n\n1. Sélectionnez les langues **Source** (gauche) et **Cible** (droite) via les menus déroulants.\n2. Cliquez dans la grande zone vide à gauche.\n3. Tapez ou collez votre texte.\n4. La traduction s'affiche **instantanément** à droite. Vous pouvez ensuite la copier ou l'écouter !"
                 ],
                 en: [
-                    "✍️ **Procedure for text:**\n1. Choose languages at the top.\n2. Write or paste text in the left box.\n3. Translation appears instantly on the right."
+                    "✍️ **User Guide - Text Translation**:\n\n1. Select **Source** (left) and **Target** (right) languages via dropdowns.\n2. Click inside the large empty box on the left.\n3. Type or paste your text.\n4. Translation appears **instantly** on the right. You can then copy or listen to it!"
                 ],
                 es: [
-                    "✍️ **Procedimiento para texto:**\n1. Elige idiomas arriba.\n2. Escribe tu texto a la izquierda.\n3. La traducción aparece a la derecha."
+                    "✍️ **Guía de uso - Texto**:\n\n1. Selecciona los idiomas arriba.\n2. Haz clic en el área vacía de la izquierda.\n3. Escribe o pega tu texto.\n4. La traducción aparece **al instante** a la derecha."
                 ],
                 ar: [
-                    "✍️ **إجراءات النص:**\n1. اختر اللغات في الأعلى.\n2. اكتب النص الخاص بك على اليسار.\n3. تظهر الترجمة على اليمين."
+                    "✍️ **دليل المستخدم - ترجمة النصوص**:\n\n1. اختر اللغات **المصدر** (يسار) و **الهدف** (يمين) من القوائم.\n2. انقر داخل المربع الفارغ الكبير على اليسار.\n3. اكتب نصك أو الصقه.\n4. تظهر الترجمة **فوريًا** على اليمين. يمكنك نسخها أو الاستماع إليها!"
                 ],
                 tr: [
-                    "✍️ **Metin için prosedür:**\n1. Üstten dilleri seçin.\n2. Metninizi sola yazın.\n3. Çeviri sağda görünür."
+                    "✍️ **Kullanım Kılavuzu - Metin Çevirisi**:\n\n1. Üstten dilleri seçin.\n2. Soldaki boş alana tıklayın.\n3. Metninizi yazın veya yapıştırın.\n4. Çeviri sağda **anında** görünür."
                 ]
             }
         },
@@ -1472,27 +1523,93 @@ const knowledgeBase = {
         procedure_audio: {
             priority: 8,
             keywords: {
-                fr: ['comment audio', 'comment voix', 'comment parler', 'procédure audio', 'tuto micro'],
-                en: ['how to audio', 'how to voice', 'how to speak', 'audio procedure'],
-                es: ['cómo audio', 'cómo voz', 'procedimiento audio'],
-                ar: ['كيف صوت', 'كيف تتحدث', 'إجراءات صوت'],
-                tr: ['nasıl ses', 'nasıl konuş', 'ses prosedürü']
+                fr: [
+                    "comment utiliser l'option audio", 'comment parler', 'procédure voix', 'comment utiliser audio', 
+                    'mode d\'emploi audio', 'comment écouter', 'guide vocal', 'étapes dictée', 'synthèse vocale'
+                ],
+                en: [
+                    'how to use audio', 'how to speak', 'voice procedure', 'mic tutorial', 
+                    'audio guide', 'how to listen', 'voice steps', 'dictation guide', 'speech to text'
+                ],
+                es: [
+                    'cómo usar audio', 'cómo hablar', 'procedimiento voz', 'tutorial micro', 
+                    'guía audio', 'cómo escuchar', 'pasos dictado'
+                ],
+                ar: [
+                    'كيف تستخدم الصوت', 'كيف تتحدث', 'إجراءات الصوت', 'شرح الميكروفون', 
+                    'دليل صوتي', 'كيف تستمع', 'خطوات الإملاء'
+                ],
+                tr: [
+                    'ses nasıl kullanılır', 'nasıl konuşulur', 'ses prosedürü', 'mikrofon kılavuzu', 
+                    'ses rehberi', 'nasıl dinlenir', 'dikte adımları'
+                ]
             },
             responses: {
                 fr: [
-                    "🎤 **Procédure Audio :**\n• **Parler** : Cliquez sur le micro (🎤) et parlez.\n• **Écouter** : Cliquez sur le haut-parleur (🔉) pour entendre la traduction."
+                    "🎤 **Mode d'emploi - Audio & Voix** :\n\n• **Pour Parler (Dictée)** : Cliquez sur l'icône **Microphone** (🎤) et parlez distinctement. L'IA écrira et traduira ce que vous dites.\n• **Pour Écouter** : Cliquez sur l'icône **Haut-parleur** (🔉) dans la zone de texte ou de traduction pour entendre la prononciation."
                 ],
                 en: [
-                    "🎤 **Audio Procedure:**\n• **Speak**: Click the mic (🎤) and talk.\n• **Listen**: Click the speaker (🔉) to hear the translation."
+                    "🎤 **User Guide - Audio & Voice**:\n\n• **To Speak (Dictation)**: Click the **Microphone** icon (🎤) and speak clearly. AI will type and translate what you say.\n• **To Listen**: Click the **Speaker** icon (🔉) in either box to hear the pronunciation."
                 ],
                 es: [
-                    "🎤 **Procedimiento de Audio:**\n• **Hablar**: Haz clic en el micrófono (🎤).\n• **Escuchar**: Haz clic en el altavoz (🔉)."
+                    "🎤 **Guía de uso - Audio**:\n\n• **Hablar**: Haz clic en el **Micrófono** (🎤) y habla. La IA escribirá y traducirá.\n• **Escuchar**: Haz clic en el **Altavoz** (🔉) para oír la pronunciación."
                 ],
                 ar: [
-                    "🎤 **إجراءات الصوت:**\n• **تحدث**: انقر فوق الميكروفون (🎤).\n• **استمع**: انقر فوق مكبر الصوت (🔉)."
+                    "🎤 **دليل المستخدم - الصوت**:\n\n• **للتحدث**: انقر على أيقونة **الميكروفون** (🎤) وتحدث بوضوح.\n• **للاستماع**: انقر على أيقونة **مكبر الصوت** (🔉) لسماع النطق."
                 ],
                 tr: [
-                    "🎤 **Ses Prosedürü:**\n• **Konuş**: Mikrofona (🎤) tıklayın.\n• **Dinle**: Hoparlöre (🔉) tıklayın."
+                    "🎤 **Kullanım Kılavuzu - Ses**:\n\n• **Konuşmak için**: **Mikrofon** simgesine (🎤) tıklayın ve konuşun.\n• **Dinlemek için**: **Hoparlör** simgesine (🔉) tıklayın."
+                ]
+            }
+        },
+
+        // --- NOUVELLE CATÉGORIE : FONCTIONNALITÉS GLOBALES & SPÉCIALITÉS ---
+        
+        features: {
+            priority: 7, // Priorité haute pour intercepter les questions générales
+            keywords: {
+                fr: [
+                    'fonctionnalités', 'fonctions', 'spécialités', 'options', 'capacités', 
+                    'que fais-tu', 'que peux-tu faire', 'a quoi sers-tu', 'présentation', 
+                    'vue d\'ensemble', 'c\'est quoi cette application', 'menu principal',
+                    'liste des options', 'tout ce que tu fais'
+                ],
+                en: [
+                    'features', 'functionalities', 'specialties', 'functions', 'capabilities',
+                    'what do you do', 'what can you do', 'what is this app', 'overview',
+                    'main menu', 'list options', 'everything you do', 'app summary'
+                ],
+                es: [
+                    'funcionalidades', 'funciones', 'especialidades', 'opciones', 'capacidades',
+                    'qué haces', 'qué puedes hacer', 'para qué sirves', 'presentación',
+                    'resumen', 'qué es esta aplicación', 'menú principal'
+                ],
+                ar: [
+                    'ميزات', 'وظائف', 'تخصصات', 'خيارات', 'قدرات', 
+                    'ماذا تفعل', 'ماذا يمكنك أن تفعل', 'ما هو هذا التطبيق', 'لمحة عامة',
+                    'قائمة الخيارات', 'كل شيء تفعله', 'شرح التطبيق'
+                ],
+                tr: [
+                    'özellikler', 'fonksiyonlar', 'uzmanlıklar', 'seçenekler', 'yetenekler',
+                    'ne yaparsın', 'ne yapabilirsin', 'bu uygulama nedir', 'genel bakış',
+                    'ana menü', 'seçenekler listesi', 'neler yapıyorsun'
+                ]
+            },
+            responses: {
+                fr: [
+                    "🚀 **Présentation de LingaNora - Next Gen**\n\nJe suis une plateforme de traduction IA complète. Voici mes **5 spécialités majeures** :\n\n1. ✍️ **Traduction de Texte** : Traduction instantanée et précise entre 5 langues.\n2. 🖼️ **OCR Image** : J'extrais et traduis le texte directement depuis vos photos ou captures d'écran.\n3. 📄 **Documents Pro** : Je traduis des fichiers entiers (.docx, .xlsx) en conservant leur mise en forme originale.\n4. 🎤 **Mode Vocal** : Dictée vocale (Speech-to-Text) et lecture des traductions (Text-to-Speech).\n5. 🤖 **Assistant Chatbot** : Je suis là pour vous guider et répondre à vos questions contextuelles.\n\n*Quelle fonctionnalité souhaitez-vous tester ?*"
+                ],
+                en: [
+                    "🚀 **LingaNora - Next Gen Overview**\n\nI am a complete AI translation platform. Here are my **5 major specialties**:\n\n1. ✍️ **Text Translation**: Instant and accurate translation between 5 languages.\n2. 🖼️ **Image OCR**: I extract and translate text directly from your photos or screenshots.\n3. 📄 **Pro Documents**: I translate entire files (.docx, .xlsx) while keeping their original formatting.\n4. 🎤 **Voice Mode**: Voice dictation (Speech-to-Text) and audio playback (Text-to-Speech).\n5. 🤖 **Chatbot Assistant**: I am here to guide you and answer your contextual questions.\n\n*Which feature would you like to try?*"
+                ],
+                es: [
+                    "🚀 **Presentación de LingaNora**\n\nSoy una plataforma completa de traducción por IA. Aquí están mis **5 especialidades principales**:\n\n1. ✍️ **Traducción de Texto**: Instantánea entre 5 idiomas.\n2. 🖼️ **OCR de Imágenes**: Extraigo y traduzco texto directamente de tus fotos.\n3. 📄 **Documentos Pro**: Traduzco archivos completos (.docx, .xlsx) manteniendo el formato.\n4. 🎤 **Modo de Voz**: Dictado y lectura de audio.\n5. 🤖 **Asistente Chatbot**: Estoy aquí para guiarte.\n\n*¿Qué función te gustaría probar?*"
+                ],
+                ar: [
+                    "🚀 **نظرة عامة على LingaNora**\n\nأنا منصة ترجمة شاملة تعمل بالذكاء الاصطناعي. إليك **تخصصاتي الخمسة الرئيسية**:\n\n1. ✍️ **ترجمة النصوص**: ترجمة فورية ودقيقة بين 5 لغات.\n2. 🖼️ **ترجمة الصور (OCR)**: أستخرج النص وأترجمه مباشرة من صورك.\n3. 📄 **المستندات**: أترجم ملفات كاملة (.docx, .xlsx) مع الحفاظ على التنسيق.\n4. 🎤 **الوضع الصوتي**: الإملاء الصوتي وقراءة الترجمات.\n5. 🤖 **المساعد الذكي**: أنا هنا لإرشادك والإجابة على أسئلتك.\n\n*ما هي الميزة التي تود تجربتها؟*"
+                ],
+                tr: [
+                    "🚀 **LingaNora Tanıtımı**\n\nBen kapsamlı bir AI çeviri platformuyum. İşte **5 ana uzmanlığım**:\n\n1. ✍️ **Metin Çevirisi**: 5 dil arasında anında ve doğru çeviri.\n2. 🖼️ **Görüntü OCR**: Fotoğraflarınızdan metni çıkarıp çeviririm.\n3. 📄 **Belgeler**: Dosyaları (.docx, .xlsx) formatı bozmadan çeviririm.\n4. 🎤 **Ses Modu**: Sesle yazma ve çevirileri dinleme.\n5. 🤖 **Chatbot Asistanı**: Size rehberlik etmek için buradayım.\n\n*Hangi özelliği denemek istersiniz?*"
                 ]
             }
         },
